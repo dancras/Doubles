@@ -5,7 +5,7 @@ A test doubles framework which is simple, logical, powerful and portable.
 
 Requires PHP 5.3+.
 
-Released under a New BSD License. The license is located at the end of files.
+Released under a New BSD License.
 
 Feedback can be left at http
 

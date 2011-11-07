@@ -1,4 +1,7 @@
 <?php
+/* Copyright (c) 2011, Daniel Howlett. All rights reserved.
+ * Released under a new BSD license.
+ * https://github.com/dancras/Doubles/blob/master/LICENSE */
 
 /* Class names and folder structure match the namespacing used so a simple autoloader should
  * be able to resolve all classes if you add the doubles folder to the include path.
