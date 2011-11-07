@@ -181,29 +181,52 @@ class TestDoubleFactory {
 	}
 	
 	private static function getRenderedParameters(\ReflectionMethod $method) {
-		$methodParams = array();
-		$params = $method->getParameters();
-		foreach ($params as $param) {
-				$paramDef = '';
-				if ($param->isArray()) {
-						$paramDef .= 'array ';
-				} elseif ($param->getClass()) {
-						$paramDef .= $param->getClass()->getName() . ' ';
-				}
-				$paramDef .= ($param->isPassedByReference() ? '&' : '') . '$' . $param->getName();
-				if ($param->isDefaultValueAvailable()) {
-						$default = var_export($param->getDefaultValue(), true);
-						if ($default == '') {
-							$default = 'null';
-						}
-						$paramDef .= ' = ' . $default;
-				} else if ($param->isOptional()) {
-						$paramDef .= ' = null';
+		
+		$renderedParameters = array();
+		
+		$parameters = $method->getParameters();
+		
+		foreach ($parameters as $parameter) {
+				$renderedParameters[] = self::getRenderedParameter($parameter);
+		}
+		
+		return implode(',', $renderedParameters);
+	}
+	
+	private static function getRenderedParameter(\ReflectionParameter $parameter) {
+
+		$typeHint = '';
+		$reference = '';
+		$name = $parameter->getName();
+		$default = '';
+
+		if ($parameter->isArray()) {
+				$typeHint = 'array ';
+		} elseif ($parameter->getClass()) {
+				$typeHint = $parameter->getClass()->getName() . ' ';
+		}
+
+		if ($parameter->isPassedByReference()) {
+			$reference = '&';
+		}
+
+		if ($parameter->isDefaultValueAvailable()) {
+
+				$default = var_export($parameter->getDefaultValue(), true);
+
+				if ($default == '') {
+					$default = 'null';
 				}
 
-				$methodParams[] = $paramDef;
+				$default = ' = ' . $default;
+
+		} else if ($parameter->isOptional()) {
+
+				$default = ' = null';
+
 		}
-		return implode(',', $methodParams);
+
+		return $typeHint . $reference . '$' . $name . $default;
 	}
 
 }
