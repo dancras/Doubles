@@ -7,7 +7,7 @@ Requires PHP 5.3+.
 
 Released under a New BSD License.
 
-Feedback can be left at http
+Feedback can be left at http://www.dancras.co.uk
 
 
 Getting Started
@@ -35,44 +35,6 @@ Shortcomings
  *   There is no support for protected methods.
 
 
-Taster
-------
-
-Below is an incredibly contrived example of doubles being used with PHPUnit. It
-hopefully demonstrates the simplicity of performing regular tasks eg. stubbing,
-checking arguments, and also the power and flexibility granted by the mock method.
-
-	use \Doubles\Mock;
-
-	class ExampleTest extends PHPUnit_Framework_TestCase {
-
-	  public function testThatShowsMockStubAndSpy() {
-
-	    $double = Mock::fromClass('SomeClass');
-
-	    $double->mock('doSomething', function ($methodName, $arguments) use ($double) {
-
-	      if ($double->spy('doSomething')->callCount() === 2) {
-	        return $arguments[0];
-	      }
-
-	      return $methodName;
-
-	    });
-
-	    $double->stub('returnSomething', 'stubValue');
-
-	    $this->assertSame('doSomething', $double->doSomething('firstValue'));
-	    $this->assertSame('secondValue', $double->doSomething('secondValue'));
-
-	    $this->assertSame('firstValue', $double->spy('doSomething')->arg(0, 0));
-
-	    $this->assertSame('stubValue', $double->returnSomething());
-	  }
-
-	}
-
-
 Reference
 ---------
 
@@ -84,70 +46,112 @@ cases. This reference will provide examples with some reasoning behind them.
 
 Tracks any interactions with an object and provides a clean API to assert against.
 
+	$myObject = Spy::fromClass('MyClass');
+
+	is_a($myObject, 'MyClass'); // true
+
+Creating a test double will define a new class extending the original and return
+an instance of it. This can be passed to the object under test.
+
 #### Arguments
 
-Having direct access to the arguments allows you to interact with them with code,
-to perform whatever assertions you need. Furthermore you can call methods on the
-value which is particularly useful when it was instantiated by the system under
-test, eg. a method that returns a value object.
+During execution our spy has the following actions performed on it:
 
-	// Will return the arguments for the nth $double->methodName() use as an array.
-	$double->spy('methodName')->args($n);
+	$myObject->give('first', 1);
 
-	// Will return the nth argument for the nth call.
-	$double->spy('methodName')->arg($n, $n);
+	$myObject->give('second', 2);
 
-#### One Call Methods
+	$myObject->doSomething();
 
-Very often when spying methods you will want to ensure it is only being called
-once to ensure there are no unexpected side-effects in your code. Rather than
-asserting against the call count repeatedly, a one call version is available.
+Arguments passed to the spy can be retrieved:
 
-	/* Will return an array of arguments for the first and only call. If there is
-	 * more than one call tracked on this method, a \Doubles\Spy\OneCallException
-	 * will be thrown, causing the test to fail */
-	$double->spy('methodName')->oneCallArgs();
+	$myObject->spy('give')->args(0); // array('first', 1)
 
-	// As above, but returning the nth argument only
-	$double->spy('methodName')->oneCallArg($n);
+	$myObject->spy('give')->args(1); // array('second', 2)
+
+Or more directly:
+
+	$myObject->spy('give')->args(0, 1); // 'first'
+
+	$myObject->spy('give')->args(0, 1); // 1
+
+Arguments can be tested with the full power of php. A simple example:
+
+	$arg = $myObject->spy('give')->args(0, 1);
+
+	$this->assertTrue( $arg < 10 && $arg % 2 === 0 ); // fail
 
 #### Call Counts
 
-	// Will return the total calls across all methods for the instance
-	$double->callCount();
+Continuing with the instance from the previous examples, we can also determine
+the total call count of all methods:
 
-	// Will return the total calls of methodName() only for the instance
-	$double->spy('methodName')->callCount();
+	$myObject->callCount(); // 3
+
+And for a specific method:
+
+	$myObject->spy('give')->callCount(); // 2
+
+#### One Call Methods
+
+Using doubles, I found myself doing this very often:
+
+	$this->assertSame(1, $myObject->spy('doSomething')->callCount());
+
+So I've added a one call variant which will throw an exception is the method in
+question has not received exactly one call.
+
+	$myObject->spy('give')->oneCallArgs(); // throws \Doubles\Spy\OneCallException
+
+	$myObject->spy('doSomething')->oneCallArgs(); // array()
+
+	$myObject->spy('foo')->oneCallArgs(); // throws \Doubles\Spy\OneCallException
+
+Since it requires exactly one call there is no need to supply a call index.
+
+	$myObject->spy('give')->oneCallArg(0); // 'first'
 
 #### Call Order
 
-Tests involving call order are often very fragile. By having access to the call
-order value, you can assert that a method is called before another method,
-without saying exactly when it will be called. Using the shared call order
-below, this can even be done between separate instances.
+Still using the same example, we can also determine the order a call to a method
+was made. Call order begins at 1.
 
-	/* Will return the order that the nth call to this method was made against all
-	 * calls to all methods on this instance */
-	$double->spy('methodName')->callOrder($n);
+	$myObject->spy('give')->callOrder(0); // 1
 
-	// See One Call Methods above
-	$double->spy('methodName')->oneCallOrder();
+	$myObject->spy('give')->callOrder(1); // 2
+
+	$myObject->spy('doSomething')->callOrder(0); // 3
+
+By doing so we can assert that methods are called in the expected order.
+
+	$this->assertGreaterThan($myObject->spy('give')->callOrder(1), $myObject->spy('doSomething')->oneCallOrder()); // pass
+
+Notice how oneCallOrder() was used, performing the boilerplate one call check.
 
 #### Shared Call Order
 
-Occasionally you need to compare the call order between instances to ensure that
-methods that depend on other methods are happening in order.
+Occasionally you need to compare the call order between instances. Assume all
+objects in this example have been created as spies.
 
-	/* Accepts any number of arguments and distributes a call counter between them.
-	 * An instance may only have one call counter configured at a time. */
-	CallCounter::shareNew($double, $double2, $doubleN);
+	CallCounter::shareNew($pizza, $waiter, $customer);
 
-	/* Will return the order that the nth call to this method was made between all
-	 * calls to all methods on all instances sharing the same call counter */
-	$double->spy('methodName')->sharedCallOrder($n);
+The \Doubles\Spy\CallCounter distributes a shared call counter. The following
+actions are performed on our objects:
 
-	// See One Call Methods above
-	$double->spy('methodName')->oneSharedCallOrder($n);
+	$pizza->cook();
+
+	$customer->eat($pizza);
+	
+	$waiter->take($pizza);	
+
+Clearly these must occur in a specific order.
+
+	$this->assertGreaterThan($pizza->spy('cook')->oneSharedCallOrder(), $waiter->spy('take')->sharedCallOrder(0)); // pass
+
+	$this->assertGreaterThan($waiter->spy('take')->sharedCallOrder(0), $customer->spy('eat')->sharedCallOrder(0)); // fail
+
+Our impatient customer appears to be helping him/her self and so our test fails.
+Notice again the oneSharedCallOrder variant, ensuring our pizza is not burnt.
 
 
 ### Mocks
