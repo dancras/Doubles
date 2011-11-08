@@ -43,6 +43,6 @@ class Mock {
 		$testDouble->addComponent($mockComponent);
 		$testDouble->addComponent(new Spy\SpyComponent);
 
-		return Core\TestDoubleFactory::create($subject, $testDouble, 'Spy%s');
+		return Core\TestDoubleFactory::create($subject, $testDouble, 'Mock%s');
 	}
 }
