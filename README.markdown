@@ -53,15 +53,17 @@ Tracks any interactions with an object and provides a clean API to assert agains
 Creating a test double will define a new class extending the original and return
 an instance of it. This can be passed to the object under test.
 
-#### Arguments
-
-During execution our spy has the following actions performed on it:
+For the following examples, our spy has the following actions performed on it:
 
 	$myObject->give('first', 1);
 
 	$myObject->give('second', 2);
 
+	$myObject->has(3);
+
 	$myObject->doSomething();
+
+#### Arguments
 
 Arguments passed to the spy can be retrieved:
 
@@ -83,12 +85,11 @@ Arguments can be tested with the full power of php. A simple example:
 
 #### Call Counts
 
-Continuing with the instance from the previous examples, we can also determine
-the total call count of all methods:
+We can also determine the total call count of all methods:
 
-	$myObject->callCount(); // 3
+	$myObject->callCount(); // 4
 
-And for a specific method:
+Or for a specific method:
 
 	$myObject->spy('give')->callCount(); // 2
 
@@ -98,18 +99,18 @@ Using doubles, I found myself doing this very often:
 
 	$this->assertSame(1, $myObject->spy('doSomething')->callCount());
 
-So I've added a one call variant which will throw an exception is the method in
+So I've added a one call variant which will throw an exception if the method in
 question has not received exactly one call.
 
 	$myObject->spy('give')->oneCallArgs(); // throws \Doubles\Spy\OneCallException
 
-	$myObject->spy('doSomething')->oneCallArgs(); // array()
+	$myObject->spy('has')->oneCallArgs(); // array(3)
 
 	$myObject->spy('foo')->oneCallArgs(); // throws \Doubles\Spy\OneCallException
 
 Since it requires exactly one call there is no need to supply a call index.
 
-	$myObject->spy('give')->oneCallArg(0); // 'first'
+	$myObject->spy('has')->oneCallArg(0); // 3
 
 #### Call Order
 
@@ -159,39 +160,60 @@ Notice again the oneSharedCallOrder variant, ensuring our pizza is not burnt.
 The mock interface combines spying, stubbing and mocking so instances created as
 mocks can use all of the methods in the Spy API.
 
+	$myObject = Mock::fromClass('MyClass');
+
+	is_a($myObject, 'MyClass'); // true
+
+I can't think of any reason not to use Mocks every time.. I realised this while
+writing this documentation.
+
 #### Stubbing
 
-	// Subsequent calls to $double->methodName() will return 'someValue'
-	$double->stub('methodName', 'someValue');
+Stubbing has been kept very simple:
 
-	/* $double->methodName() will throw the provided Exception. Spy behaviour
-	 * is not disrupted by this. */
-	$double->stub('methodName', new Exception);
+	$myObject->stub('foo', 'bar');
+
+	$myObject->foo(); // 'bar'
+
+Stubs can also throw exceptions:
+
+	$myObject->stub('boom', new EndOfTheWorldException);
+
+	$myObject->boom(); // throws EndOfTheWorldException
+
+If you need a method to actually return an Exception, you will need to mock it.
 
 #### Mocking
 
-	/* Calls to methodName will be forwarded to the provided closure.
-	 * 
-	 * Performing assertions within this callback is not recommended because
-         * if your code fails to reach it, the test will pass. Instead, pass any
-	 * data required for assertions out of the closure using referenced
-	 * variables. */
-	$double->mock('methodName', function ($methodName, $arguments) use (&$m) {
-	  $m = $methodName;
+Mocking is the most versatile way to test a method but can be difficult to follow.
+
+	$myObject->mock('give', function ($methodName, $arguments) use (&$m, &$a) {
+	  $m = $methodName; // 'give'
+	  $a = $arguments; // array(1, 2, 3)
+	  return 'result';
 	}
+
+	$myObject->give(1, 2, 3); // 'result'
+
+Performing assertions within the mock callback is not recommended. If your code
+fails to call the method, no assertions will be run and the test may pass.
+
+If you are asserting within the mock, you may want to use a spy. Alternatively,
+using variables by reference will allow you to perform your assertions outside
+the closure.
 
 #### Expectations
 
-By default, calling methods that have not been defined as either a mock or stub
-will trigger no errors, and will be tracked by the spy. However if you require
-some action when unexpected methods are called, there is a method available.
+When you mock or stub a method it becomes expected. By default, calls to methods
+that are not expected have no repercussions.
 
-	/* Perform a callback when a method that has not been mocked or stubbed. By
-	 * doing this in a closure you can be logically selective about how you handle
-	 * expectations and their violations */
-	$double->setUnexpectedMethodCallback(function ($methodName, $arguments) {
-		throw new Exception('Unexpected method call on ' . methodName);
+	$myObject->unknown(); // null
+
+	$myObject->setUnexpectedMethodCallback(function ($methodName, $arguments) {
+	  throw new Exception;
 	});
+
+	$myObject->unknown(); // throws Exception
 
 
 ### Rapid Prototyping
