@@ -191,7 +191,7 @@ Mocking is the most versatile way to test a method but can be difficult to follo
 	  $m = $methodName; // 'give'
 	  $a = $arguments; // array(1, 2, 3)
 	  return 'result';
-	}
+	});
 
 	$myObject->give(1, 2, 3); // 'result'
 
