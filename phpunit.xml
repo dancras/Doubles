@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit stopOnFailure="false"
+         bootstrap="tests/bootstrap.php"
+>
+    <testsuites>
+        <testsuite name="Doubles Test Suite">
+            <directory>./tests</directory>
+            <exclude>./tests/src</exclude>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <directory>./src</directory>
+        </whitelist>
+    </filter>
+</phpunit>
