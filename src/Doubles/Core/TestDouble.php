@@ -80,6 +80,12 @@ class TestDouble {
 		$this->components->push($component);
 	}
 	
+        /**
+         * Set to true when the subject class or interface of this test double
+         * has not been implemented yet.
+         * 
+         * @param boolean $setting
+         */
 	public function subjectIsUndefined($setting) {
 		$this->isSubjectUndefined = $setting;
 	}
