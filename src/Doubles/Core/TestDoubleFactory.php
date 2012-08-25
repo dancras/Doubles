@@ -179,7 +179,7 @@ namespace {$namespace} {
 				continue;
 			}
 			
-			$reflectMethod = new \ReflectionMethod($subject->getName(), $methodName);
+			$reflectMethod = new \ReflectionMethod($subject->getFullyQualifiedName(), $methodName);
 
 			$renderedParameters = self::getRenderedParameters($reflectMethod);
 			$renderedMethods .= self::getRenderedMethod($methodName, $renderedParameters);
