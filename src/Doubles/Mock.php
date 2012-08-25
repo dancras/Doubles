@@ -26,6 +26,21 @@ class Mock {
 		return self::create($interfaceName, T_INTERFACE);
 	}
 	
+	/**
+	 * Create an instance of the provided type name without calling the
+	 * original constructor.
+	 * 
+	 * @param string $fullyQualifiedTypeName
+	 * @return object
+	 */
+	public static function noConstruct($fullyQualifiedTypeName) {
+		return Core\TestDoubleFactory::create(
+			new Core\NoConstructSubject($fullyQualifiedTypeName, T_CLASS),
+			new Core\TestDouble,
+			'NoConstruct%s'
+		);
+	}
+	
 	private static function create($subjectName, $type) {
 		
 		$subject = new Core\Subject($subjectName, $type);
