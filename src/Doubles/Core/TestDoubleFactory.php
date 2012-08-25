@@ -42,40 +42,52 @@ class TestDoubleFactory {
 %GeneratedMethods%
 
 }';
-	
-	/** @var array[]string */
+
+	/**
+	 * Maintains a list of subjects that were not defined when first passed into the factory
+	 * 
+	 * @var array
+	 */
 	private static $undefinedSubjects = array();
 	
 	/**
 	 * 
-	 * 
+	 * @param \Doubles\Core\Subject $subject
+	 * @param \Doubles\Core\TestDouble $testDouble
 	 * @param string $nameFormat
 	 * @return object
+	 * @throws DoublesException
 	 */
-	public static function create(ISubject $subject, TestDouble $testDouble, $nameFormat) {
+	public static function create(Subject $subject, TestDouble $testDouble, $nameFormat) {
 		
 		if (strpos($nameFormat, '%s') === false) {
 			throw new DoublesException('$nameFormat uses sprintf and requires %s in the format');
 		}
 		
-		$subjectName = $subject->getName();		
-		$testDoubleName = sprintf($nameFormat, $subjectName);
+		$testDoubleName = sprintf($nameFormat, $subject->getName());
+		$fullyQualifiedTestDoubleName = $subject->getNamespace() . '\\' .  $testDoubleName;
 		
-		if (!class_exists($testDoubleName)) {
-			self::generateTestDouble($testDoubleName, $subject);
+		if (!$subject->exists()) {
+			self::evalSubject($subject);
+			self::$undefinedSubjects[] = $subject->getFullyQualifiedName();
 		}
 		
-		if (in_array($subjectName, self::$undefinedSubjects)) {
+		if (in_array($subject->getFullyQualifiedName(), self::$undefinedSubjects)) {
 			$testDouble->subjectIsUndefined(true);
 		}
+
+		if (!class_exists($fullyQualifiedTestDoubleName)) {
+			self::evalTestDouble($testDoubleName, $subject);
+		}
 		
-		return new $testDoubleName($testDouble);
+		return new $fullyQualifiedTestDoubleName($testDouble);
 	}
 	
-	private static function generateTestDouble($testDoubleName, ISubject $subject) {
+	private static function evalTestDouble($testDoubleName, Subject $subject) {
 		
 		$subjectName = $subject->getName();
 		$type = $subject->getType();
+		$namespace = $subject->getNamespace();
 		
 		$replacements = array(
 			'Type' => 'class',
@@ -84,47 +96,52 @@ class TestDoubleFactory {
 		);
 		
 		if ($type === T_CLASS) {
-			self::generateClassIfNew($subjectName);
 			$replacements['Extends'] = "extends $subjectName";
-		} else if ($type === T_INTERFACE) {
-			self::generateInterfaceIfNew($subjectName);
+		} else {
 			$replacements['Implements'] = "implements $subjectName";
 		}
 		
 		$replacements['GeneratedMethods'] = self::getRenderedMethods($subject);
 
-		$renderedClass = self::getRenderedType($replacements);
-		eval($renderedClass);
+		$renderedTestDouble = self::getRenderedTypeWithNamespace(
+			self::getRenderedType($replacements),
+			$namespace
+		);
+		
+		eval($renderedTestDouble);
 	}
 	
-	private static function generateClassIfNew($subjectName) {
+	private static function evalSubject(Subject $subject) {
 		
-		if (!class_exists($subjectName)) {
-			
-			self::$undefinedSubjects[] = $subjectName;
-			
-			$renderedClass = self::getRenderedType(array(
-					'TypeName' => $subjectName
-			));
+		$replacements = array(
+			'TypeName' => $subject->getName()
+		);
+		
+		if ($subject->getType() === T_INTERFACE) {
+			$replacements['Type'] = 'interface';
+			$replacements['Constructor'] = '';
+		}
+		
+		$renderedType = self::getRenderedTypeWithNamespace(
+			self::getRenderedType($replacements),
+			$subject->getNamespace()
+		);
+		
+		eval($renderedType);
 
-			eval($renderedClass);
-		}
 	}
 	
-	private static function generateInterfaceIfNew($subjectName) {
+	private static function getRenderedTypeWithNamespace($renderedType, $namespace) {
 		
-		if (!interface_exists($subjectName)) {
-			
-			self::$undefinedSubjects[] = $subjectName;
-			
-			$renderedInterface = self::getRenderedType(array(
-					'Type' => 'interface',
-					'TypeName' => $subjectName,
-					'Constructor' => ''
-			));
-			
-			eval($renderedInterface);
+		if ($namespace === "") {
+			return $renderedType;
 		}
+		
+		return "
+namespace {$namespace} {
+{$renderedType}
+}
+";
 	}
 
 	private static function getRenderedType(array $replacements) {
@@ -149,7 +166,7 @@ class TestDoubleFactory {
 		return $renderedType;
 	}
 	
-	private static function getRenderedMethods(ISubject $subject) {
+	private static function getRenderedMethods(Subject $subject) {
 
 		$methodNames = $subject->getMethodNames();
 

@@ -9,19 +9,25 @@ class MockTest extends PHPUnit_Framework_TestCase {
 
 	public function testMockFromClassIsAnInstanceOfSubjectClass() {
 
-		$mock = Mock::fromClass('SomeClass');
+		$mock = Mock::fromClass('\SomeClass');
 		$this->assertInstanceOf('SomeClass', $mock);
+		
+		$mock = Mock::fromClass('\SomeNamespace\SomeClass');
+		$this->assertInstanceOf('SomeNamespace\SomeClass', $mock);
 	}
 	
 	public function testMockFromInterfaceIsAnInstanceOfSubjectInterface() {
 
-		$mock = Mock::fromInterface('SomeInterface');
+		$mock = Mock::fromInterface('\SomeInterface');
 		$this->assertInstanceOf('SomeInterface', $mock);
+		
+		$mock = Mock::fromInterface('\SomeNamespace\SomeInterface');
+		$this->assertInstanceOf('SomeNamespace\SomeInterface', $mock);
 	}
 	
 	public function testUnexpectedMethodCallbackIsCalledWhenMethodIsNotMockedOrStubbed() {
 
-		$mock = Mock::fromClass('SomeClass');
+		$mock = Mock::fromClass('\SomeClass');
 
 		$mock->setUnexpectedMethodCallback(function ($methodName, $arguments) use (&$m, &$a) {
 			$m = $methodName;
@@ -36,7 +42,7 @@ class MockTest extends PHPUnit_Framework_TestCase {
 	
 	public function testStubReturnsValue() {
 
-		$mock = Mock::fromClass('SomeClass');
+		$mock = Mock::fromClass('\SomeClass');
 		
 		$dummyObject = new stdClass;
 		$mock->stub('method', $dummyObject);
@@ -47,7 +53,7 @@ class MockTest extends PHPUnit_Framework_TestCase {
 	
 	public function testStubThrowsExceptionWithoutAffectingSpy() {
 
-		$mock = Mock::fromClass('SomeClass');
+		$mock = Mock::fromClass('\SomeClass');
 		
 		$exception = new Exception;
 		$mock->stub('method', $exception);
@@ -65,7 +71,7 @@ class MockTest extends PHPUnit_Framework_TestCase {
 	
 	public function testMockPerformsCallback() {
 		
-		$mock = Mock::fromClass('SomeClass');
+		$mock = Mock::fromClass('\SomeClass');
 		
 		$mock->mock('method', function ($methodName, $arguments) use (&$m, &$a) {
 			$m = $methodName;

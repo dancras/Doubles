@@ -28,7 +28,7 @@ class Mock {
 	
 	private static function create($subjectName, $type) {
 		
-		$subject = new Core\SimpleSubject($subjectName, $type);
+		$subject = new Core\Subject($subjectName, $type);
 		$testDouble = new Core\TestDouble;
 		
 		$expectationComponent = new Mock\ExpectationComponent;

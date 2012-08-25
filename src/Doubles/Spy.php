@@ -27,7 +27,7 @@ class Spy {
 	}
 	
 	private static function create($subjectName, $type) {
-		$subject = new Core\SimpleSubject($subjectName, $type);
+		$subject = new Core\Subject($subjectName, $type);
 		$testDouble = new Core\TestDouble;
 		$testDouble->addComponent(new Spy\SpyComponent);
 		return Core\TestDoubleFactory::create($subject, $testDouble, 'Spy%s');
