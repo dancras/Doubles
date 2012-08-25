@@ -5,51 +5,55 @@
 
 namespace Doubles\Mock;
 
+use Doubles\Core\IComponent;
+
 /**
- * 
+ *
  */
-class ExpectationComponent implements \Doubles\Core\IComponent {
-	
-	private $expecters = array();
-	
-	private $unexpectedMethodCallback;
-	
-	public function setUnexpectedMethodCallback(\Closure $callback) {
-		$this->unexpectedMethodCallback = $callback;
-	}
-	
-	public function whenMethodCalled($methodName, array $arguments) {
+class ExpectationComponent implements IComponent
+{
+    private $expecters = array();
 
-		if ($this->isMethodExpected($methodName)) {
-			return;
-		}
+    private $unexpectedMethodCallback;
 
-		$callback = $this->unexpectedMethodCallback;
-		$callback($methodName, $arguments);
-	}
-	
-	public function isMethodExpected($methodName) {
+    public function setUnexpectedMethodCallback(\Closure $callback)
+    {
+        $this->unexpectedMethodCallback = $callback;
+    }
 
-		foreach ($this->expecters as $component) {
-			
-			if ($component->isExpecting($methodName)) {
-				return true;
-			}
+    public function whenMethodCalled($methodName, array $arguments)
+    {
+        if ($this->isMethodExpected($methodName)) {
+            return;
+        }
 
-		}
-		
-		return false;
-	}
-	
-	public function addExpecter(IExpecter $expecter) {
-		$this->expecters[] = $expecter;
-	}
-	
-	public function __construct() {
-		
-		$this->unexpectedMethodCallback = function () {
-		};
+        $callback = $this->unexpectedMethodCallback;
+        $callback($methodName, $arguments);
+    }
 
-	}
+    public function isMethodExpected($methodName)
+    {
+        foreach ($this->expecters as $component) {
 
+            if ($component->isExpecting($methodName)) {
+                return true;
+            }
+
+        }
+
+        return false;
+    }
+
+    public function addExpecter(IExpecter $expecter)
+    {
+        $this->expecters[] = $expecter;
+    }
+
+    public function __construct()
+    {
+        $this->unexpectedMethodCallback = function () {
+        };
+
+    }
 }
+

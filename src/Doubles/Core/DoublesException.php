@@ -5,5 +5,7 @@
 
 namespace Doubles\Core;
 
-class DoublesException extends \Exception {
+class DoublesException extends \Exception
+{
 }
+

@@ -6,9 +6,9 @@
 namespace Doubles;
 
 /**
- * 
+ *
  */
-class Doubles {
-	
-	
+class Doubles
+{
 }
+

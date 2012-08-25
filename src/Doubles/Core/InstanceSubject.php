@@ -6,24 +6,27 @@
 namespace Doubles\Core;
 
 /**
- * 
+ *
  */
-class InstanceSubject extends Subject {
-	
-	private $instance;
-	
-	/**
-	 * @return object
-	 */
-	public function getInstance() {
-		return $this->instance;
-	}
+class InstanceSubject extends Subject
+{
+    private $instance;
 
-	/**
-	 * @param object $instance
-	 */
-	public function __construct($instance) {
-		$this->instance = $instance;
-		parent::__construct('\\' . get_class($instance), T_CLASS);
-	}
+    /**
+     * @return object
+     */
+    public function getInstance()
+    {
+        return $this->instance;
+    }
+
+    /**
+     * @param object $instance
+     */
+    public function __construct($instance)
+    {
+        $this->instance = $instance;
+        parent::__construct('\\' . get_class($instance), T_CLASS);
+    }
 }
+

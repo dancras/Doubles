@@ -5,31 +5,33 @@
 
 namespace Doubles\Partial;
 
+use Doubles\Core\IComponent;
+
 /**
- * 
+ *
  */
-class PartialComponent implements \Doubles\Core\IComponent {
-	
-	private $instance;
-	
-	/** @var \Doubles\Mock\ExpectationComponent */
-	private $expectationComponent;
-	
-	public function whenMethodCalled($methodName, array $arguments) {
+class PartialComponent implements IComponent
+{
+    private $instance;
 
-		if ($this->expectationComponent->isMethodExpected($methodName)) {
-			return;
-		}
-		
-		return call_user_func_array(array($this->instance, $methodName), $arguments);
-	}
-	
-	public function __construct(
-		\Doubles\Core\InstanceSubject $subject,
-		\Doubles\Mock\ExpectationComponent $expectationComponent
-	) {
-		$this->instance = $subject->getInstance();
-		$this->expectationComponent = $expectationComponent;
-	}
+    /** @var \Doubles\Mock\ExpectationComponent */
+    private $expectationComponent;
 
+    public function whenMethodCalled($methodName, array $arguments)
+    {
+        if ($this->expectationComponent->isMethodExpected($methodName)) {
+            return;
+        }
+
+        return call_user_func_array(array($this->instance, $methodName), $arguments);
+    }
+
+    public function __construct(
+        \Doubles\Core\InstanceSubject $subject,
+        \Doubles\Mock\ExpectationComponent $expectationComponent
+    ) {
+        $this->instance = $subject->getInstance();
+        $this->expectationComponent = $expectationComponent;
+    }
 }
+

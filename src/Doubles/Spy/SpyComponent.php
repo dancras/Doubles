@@ -5,44 +5,48 @@
 
 namespace Doubles\Spy;
 
+use Doubles\Core\IComponent;
+
 /**
- * 
+ *
  */
-class SpyComponent implements \Doubles\Core\IComponent {
-	
-	private $methodSpies = array();
-	
-	private $callCount = 0;
-	
-	private $callCounter = null;
-	
-	public function spy($methodName) {
+class SpyComponent implements IComponent
+{
+    private $methodSpies = array();
 
-		if (isSet($this->methodSpies[$methodName])) {
-			return $this->methodSpies[$methodName];
-		}
+    private $callCount = 0;
 
-		return new MethodSpy($methodName);
-	}
-	
-	public function callCount() {
-		return $this->callCount;
-	}
-	
-	public function setSharedCallCounter(CallCounter $counter) {
-		$this->callCounter = $counter;
-	}
-	
-	public function whenMethodCalled($methodName, array $arguments) {
+    private $callCounter = null;
 
-		$this->callCount++;
-		
-		if (!isSet($this->methodSpies[$methodName])) {
-			$this->methodSpies[$methodName] = new MethodSpy($methodName);
-		}
-		
-		$this->methodSpies[$methodName]->log($arguments, $this->callCount, $this->callCounter);
-		
-	}
+    public function spy($methodName)
+    {
+        if (isSet($this->methodSpies[$methodName])) {
+            return $this->methodSpies[$methodName];
+        }
 
+        return new MethodSpy($methodName);
+    }
+
+    public function callCount()
+    {
+        return $this->callCount;
+    }
+
+    public function setSharedCallCounter(CallCounter $counter)
+    {
+        $this->callCounter = $counter;
+    }
+
+    public function whenMethodCalled($methodName, array $arguments)
+    {
+        $this->callCount++;
+
+        if (!isSet($this->methodSpies[$methodName])) {
+            $this->methodSpies[$methodName] = new MethodSpy($methodName);
+        }
+
+        $this->methodSpies[$methodName]->log($arguments, $this->callCount, $this->callCounter);
+
+    }
 }
+

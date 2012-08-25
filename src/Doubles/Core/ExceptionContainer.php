@@ -10,16 +10,18 @@ namespace Doubles\Core;
  * Exception, without actually throwing one. The TestDouble can call throwContents
  * when other functionality is complete.
  */
-class ExceptionContainer {
-	
-	private $exception;
-	
-	public function throwContents() {
-		throw $this->exception;
-	}
-	
-	public function __construct(\Exception $exception) {
-		$this->exception = $exception;
-	}
+class ExceptionContainer
+{
+    private $exception;
 
+    public function throwContents()
+    {
+        throw $this->exception;
+    }
+
+    public function __construct(\Exception $exception)
+    {
+        $this->exception = $exception;
+    }
 }
+

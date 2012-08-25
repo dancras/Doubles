@@ -5,14 +5,14 @@
 
 use Doubles\Mock;
 
-class NoConstructTest extends PHPUnit_Framework_TestCase {
+class NoConstructTest extends PHPUnit_Framework_TestCase
+{
+    public function testConstructorIsSkippedForNoConstruct()
+    {
+        $instance = Mock::noConstruct('\Doubles\Test\Dummy');
+        $this->assertInstanceOf('\Doubles\Test\Dummy', $instance);
+        $this->assertSame('before', $instance->getConstructedValue());
 
-	public function testConstructorIsSkippedForNoConstruct() {
-
-		$instance = Mock::noConstruct('\Doubles\Test\Dummy');
-		$this->assertInstanceOf('\Doubles\Test\Dummy', $instance);
-		$this->assertSame('before', $instance->getConstructedValue());
-
-	}
-	
+    }
 }
+
