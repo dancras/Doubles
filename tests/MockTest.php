@@ -51,6 +51,19 @@ class MockTest extends PHPUnit_Framework_TestCase {
 
 	}
 	
+	public function testStubForProtectedMethod() {
+		
+		$mock = Mock::fromClass('\Doubles\Test\Dummy');
+		
+		$dummyObject = new stdClass;
+		$mock->stub('_getProtectedValue', $dummyObject);
+		
+		$method = new ReflectionMethod($mock, '_getProtectedValue');
+		$method->setAccessible(true);
+		
+		$this->assertSame($dummyObject, $method->invoke($mock));
+	}
+	
 	public function testStubThrowsExceptionWithoutAffectingSpy() {
 
 		$mock = Mock::fromClass('\SomeClass');

@@ -47,7 +47,7 @@ class Subject {
 
 	public function getMethodNames() {
 		$reflectionSubject = new \ReflectionClass($this->_getReflectionSubject());
-		$methods = $reflectionSubject->getMethods(\ReflectionMethod::IS_PUBLIC);
+		$methods = $reflectionSubject->getMethods(\ReflectionMethod::IS_PUBLIC | \ReflectionMethod::IS_PROTECTED);
 
 		$methodNames = array();
 
