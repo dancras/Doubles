@@ -73,7 +73,7 @@ Arguments passed to the spy can be retrieved:
 
 Or more directly:
 
-	$myObject->spy('give')->args(0, 1); // 'first'
+	$myObject->spy('give')->args(0, 0); // 'first'
 
 	$myObject->spy('give')->args(0, 1); // 1
 
