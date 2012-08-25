@@ -34,19 +34,9 @@ class Subject {
 	public function getFullyQualifiedName() {
 		return $this->fullyQualifiedName;
 	}
-	
-	/**
-	 * Used by \ReflectionClass constructor in getMethodNames() to determine the methods that
-	 * should be overridden for this doubles subject.
-	 * 
-	 * @return mixed
-	 */
-	protected function _getReflectionSubject() {
-		return $this->getFullyQualifiedName();
-	}
 
 	public function getMethodNames() {
-		$reflectionSubject = new \ReflectionClass($this->_getReflectionSubject());
+		$reflectionSubject = new \ReflectionClass($this->getFullyQualifiedName());
 		$methods = $reflectionSubject->getMethods(\ReflectionMethod::IS_PUBLIC | \ReflectionMethod::IS_PROTECTED);
 
 		$methodNames = array();
