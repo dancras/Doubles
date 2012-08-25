@@ -41,6 +41,36 @@ class Mock {
 		);
 	}
 	
+	/**
+	 * @return object
+	 */
+	public static function partial($object) {
+		
+		$subject = new Core\InstanceSubject($object);
+		
+		$testDouble = new Core\TestDouble;
+		
+		$testDouble->addComponent(new Spy\SpyComponent);
+		
+		$expectationComponent = new Mock\ExpectationComponent;
+		$stubComponent = new Mock\StubComponent;
+		$mockComponent = new Mock\MockComponent;
+		
+		$expectationComponent->addExpecter($stubComponent);
+		$expectationComponent->addExpecter($mockComponent);
+		
+		$testDouble->addComponent(new Partial\PartialComponent($subject, $expectationComponent));
+		$testDouble->addComponent($expectationComponent);
+		$testDouble->addComponent($stubComponent);
+		$testDouble->addComponent($mockComponent);
+		
+		return Core\TestDoubleFactory::create(
+			$subject,
+			$testDouble,
+			'Partial%s'
+		);
+	}
+	
 	private static function create($subjectName, $type) {
 		
 		$subject = new Core\Subject($subjectName, $type);

@@ -12,6 +12,8 @@ namespace Doubles\Test;
 class Dummy {
 	
 	private $constructedValue = 'before';
+	
+	private $value;
     
     protected function _getProtectedValue() {
         return null;
@@ -19,6 +21,18 @@ class Dummy {
 	
 	public function getConstructedValue() {
 		return $this->constructedValue;
+	}
+	
+	public function setValue($value) {
+		$this->value = $value;
+	}
+	
+	public function getValue() {
+		return $this->value;
+	}
+	
+	public function getFixedValue() {
+		return 'fixed';
 	}
 	
 	public function __construct() {

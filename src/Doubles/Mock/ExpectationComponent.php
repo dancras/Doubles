@@ -20,20 +20,29 @@ class ExpectationComponent implements \Doubles\Core\IComponent {
 	
 	public function whenMethodCalled($methodName, array $arguments) {
 
-		foreach ($this->expecters as $component) {
-			
-			if ($component->isExpecting($methodName)) {
-				return;
-			}
-
+		if ($this->isMethodExpected($methodName)) {
+			return;
 		}
 
 		$callback = $this->unexpectedMethodCallback;
 		$callback($methodName, $arguments);
 	}
 	
+	public function isMethodExpected($methodName) {
+
+		foreach ($this->expecters as $component) {
+			
+			if ($component->isExpecting($methodName)) {
+				return true;
+			}
+
+		}
+		
+		return false;
+	}
+	
 	public function addExpecter(IExpecter $expecter) {
-		$this->expecters = $expecter;
+		$this->expecters[] = $expecter;
 	}
 	
 	public function __construct() {
