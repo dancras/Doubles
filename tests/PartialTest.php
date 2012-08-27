@@ -57,5 +57,27 @@ class PartialTest extends PHPUnit_Framework_TestCase
         $this->assertSame(0, $instance->spy('setValue')->callCount());
 
     }
+
+    public function testInterceptOnPartial()
+    {
+        $instance = Spy::fromClass('\Doubles\Test\Dummy');
+        $partial = Mock::partial($instance);
+
+        $partial->intercept(
+            'getFixedValue',
+            function ($methodName, $arguments, $instance) use (&$m, &$a, &$i) {
+                $m = $methodName;
+                $a = $arguments;
+                $i = $instance;
+                return 'intercepted';
+            }
+        );
+
+        $this->assertSame('intercepted', $partial->getFixedValue('someArg'));
+        $this->assertSame('getFixedValue', $m);
+        $this->assertEquals(array('someArg'), $a);
+        $this->assertSame($instance, $i);
+        $this->assertSame(0, $instance->spy('getFixedValue')->callCount());
+    }
 }
 

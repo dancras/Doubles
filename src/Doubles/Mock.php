@@ -58,14 +58,17 @@ class Mock
         $expectationComponent = new Mock\ExpectationComponent;
         $stubComponent = new Mock\StubComponent;
         $mockComponent = new Mock\MockComponent;
+        $interceptorComponent = new Partial\InterceptorComponent($subject);
 
         $expectationComponent->addExpecter($stubComponent);
         $expectationComponent->addExpecter($mockComponent);
+        $expectationComponent->addExpecter($interceptorComponent);
 
         $testDouble->addComponent(new Partial\PartialComponent($subject, $expectationComponent));
         $testDouble->addComponent($expectationComponent);
         $testDouble->addComponent($stubComponent);
         $testDouble->addComponent($mockComponent);
+        $testDouble->addComponent($interceptorComponent);
 
         return Core\TestDoubleFactory::create(
             $subject,
