@@ -3,15 +3,14 @@
  * Released under a new BSD license.
  * https://github.com/dancras/Doubles/blob/master/LICENSE */
 
-use Doubles\Mock;
-use Doubles\Spy;
+use Doubles\Doubles;
 
 class PartialTest extends PHPUnit_Framework_TestCase
 {
     public function testMethodsOfPartialAreUnaffected()
     {
         $instance = new \Doubles\Test\Dummy;
-        $partial = Mock::partial($instance);
+        $partial = Doubles::partial($instance);
         $partial->setValue('value');
         $this->assertSame('value', $partial->getValue());
 
@@ -20,7 +19,7 @@ class PartialTest extends PHPUnit_Framework_TestCase
     public function testSpyOnPartial()
     {
         $instance = new \Doubles\Test\Dummy;
-        $partial = Mock::partial($instance);
+        $partial = Doubles::partial($instance);
         $partial->setValue('value');
         $this->assertSame('value', $partial->spy('setValue')->arg(0, 0));
 
@@ -28,8 +27,8 @@ class PartialTest extends PHPUnit_Framework_TestCase
 
     public function testStubOnPartial()
     {
-        $instance = Spy::fromClass('\Doubles\Test\Dummy');
-        $partial = Mock::partial($instance);
+        $instance = Doubles::fromClass('\Doubles\Test\Dummy');
+        $partial = Doubles::partial($instance);
         $partial->stub('getFixedValue', 'stub');
         $this->assertSame('stub', $partial->getFixedValue());
         $this->assertSame(0, $instance->spy('getFixedValue')->callCount());
@@ -38,8 +37,8 @@ class PartialTest extends PHPUnit_Framework_TestCase
 
     public function testMockOnPartial()
     {
-        $instance = Spy::fromClass('\Doubles\Test\Dummy');
-        $partial = Mock::partial($instance);
+        $instance = Doubles::fromClass('\Doubles\Test\Dummy');
+        $partial = Doubles::partial($instance);
 
         $partial->mock(
             'setValue',
@@ -60,8 +59,8 @@ class PartialTest extends PHPUnit_Framework_TestCase
 
     public function testInterceptOnPartial()
     {
-        $instance = Spy::fromClass('\Doubles\Test\Dummy');
-        $partial = Mock::partial($instance);
+        $instance = Doubles::fromClass('\Doubles\Test\Dummy');
+        $partial = Doubles::partial($instance);
 
         $partial->intercept(
             'getFixedValue',

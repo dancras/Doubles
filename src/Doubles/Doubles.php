@@ -6,12 +6,12 @@
 namespace Doubles;
 
 /**
- *
+ * Provides static methods to create composed instances of test doubles
  */
-class Mock
+class Doubles
 {
     /**
-     * @param  string              $className
+     * @param string $className
      * @return \Doubles\Mock\IMock
      */
     public static function fromClass($className)
@@ -20,7 +20,7 @@ class Mock
     }
 
     /**
-     * @param  string              $interfaceName
+     * @param string $interfaceName
      * @return \Doubles\Mock\IMock
      */
     public static function fromInterface($interfaceName)
@@ -32,8 +32,8 @@ class Mock
      * Create an instance of the provided type name without calling the
      * original constructor.
      *
-     * @param  string $fullyQualifiedTypeName
-     * @return object
+     * @param string $fullyQualifiedTypeName
+     * @return $fullyQualifiedTypeName
      */
     public static function noConstruct($fullyQualifiedTypeName)
     {
@@ -45,7 +45,7 @@ class Mock
     }
 
     /**
-     * @return object
+     * @return \Doubles\Partial\IInterceptor
      */
     public static function partial($object)
     {

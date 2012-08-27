@@ -3,26 +3,26 @@
  * Released under a new BSD license.
  * https://github.com/dancras/Doubles/blob/master/LICENSE */
 
-use Doubles\Spy;
+use Doubles\Doubles;
 use Doubles\Spy\CallCounter;
 
 class SpyTest extends PHPUnit_Framework_TestCase
 {
     public function testSpyFromClassIsAnInstanceOfSubjectClass()
     {
-        $spy = Spy::fromClass('\SomeClass');
+        $spy = Doubles::fromClass('\SomeClass');
         $this->assertInstanceOf('SomeClass', $spy);
     }
 
     public function testSpyFromInterfaceIsAnInstanceOfSubjectInterface()
     {
-        $spy = Spy::fromInterface('\SomeInterface');
+        $spy = Doubles::fromInterface('\SomeInterface');
         $this->assertInstanceOf('SomeInterface', $spy);
     }
 
     public function testSpyCountsCallsToAnyOfItsMethods()
     {
-        $spy = Spy::fromClass('\SomeClass');
+        $spy = Doubles::fromClass('\SomeClass');
         $spy->firstMethod();
         $spy->firstMethod();
         $spy->secondMethod();
@@ -35,7 +35,7 @@ class SpyTest extends PHPUnit_Framework_TestCase
 
     public function testSpyTracksMethodCallOrder()
     {
-        $spy = Spy::fromClass('\SomeClass');
+        $spy = Doubles::fromClass('\SomeClass');
         $spy->firstMethod();
         $spy->secondMethod();
         $spy->firstMethod();
@@ -48,9 +48,9 @@ class SpyTest extends PHPUnit_Framework_TestCase
 
     public function testSpyTracksCallOrderAcrossObjects()
     {
-        $spy = Spy::fromClass('\SomeClass');
-        $otherSpy = Spy::fromClass('\SomeOtherClass');
-        $anotherSpy = Spy::fromClass('\SomeOtherClass');
+        $spy = Doubles::fromClass('\SomeClass');
+        $otherSpy = Doubles::fromClass('\SomeOtherClass');
+        $anotherSpy = Doubles::fromClass('\SomeOtherClass');
 
         CallCounter::shareNew($spy, $otherSpy, $anotherSpy);
 
@@ -65,7 +65,7 @@ class SpyTest extends PHPUnit_Framework_TestCase
 
     public function testSpyTracksArguments()
     {
-        $spy = Spy::fromClass('\SomeClass');
+        $spy = Doubles::fromClass('\SomeClass');
 
         $dummyObject = new stdClass;
         $spy->method($dummyObject, 'dummyValue');
@@ -80,7 +80,7 @@ class SpyTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('\Doubles\Spy\OneCallException');
 
-        $spy = Spy::fromClass('\SomeClass');
+        $spy = Doubles::fromClass('\SomeClass');
         $spy->method();
         $spy->method();
 
@@ -91,7 +91,7 @@ class SpyTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('\Doubles\Spy\OneCallException');
 
-        $spy = Spy::fromClass('\SomeClass');
+        $spy = Doubles::fromClass('\SomeClass');
         $spy->method();
         $spy->method();
 
@@ -102,7 +102,7 @@ class SpyTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('\Doubles\Spy\OneCallException');
 
-        $spy = Spy::fromClass('\SomeClass');
+        $spy = Doubles::fromClass('\SomeClass');
         $spy->method();
         $spy->method();
 
@@ -113,7 +113,7 @@ class SpyTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('\Doubles\Spy\OneCallException');
 
-        $spy = Spy::fromClass('\SomeClass');
+        $spy = Doubles::fromClass('\SomeClass');
         $spy->method();
         $spy->method();
 
