@@ -8,17 +8,30 @@ namespace Doubles\Expectation;
 use Doubles\Core\IComponent;
 
 /**
- *
+ * Provides functionality to track which methods are expected for a test double.
+ * A callback can be set to handle unexpected method usage.
  */
-class ExpectationComponent implements IComponent, IExpecter
+class ExpectationComponent implements IComponent, IExpectation, IExpecter
 {
     private $expecters = array();
 
     private $unexpectedMethodCallback;
 
+    private $expected = array();
+
     public function setUnexpectedMethodCallback(\Closure $callback)
     {
         $this->unexpectedMethodCallback = $callback;
+    }
+
+    public function expect($methodName)
+    {
+        $this->expected[$methodName] = $methodName;
+    }
+
+    public function unexpect($methodName)
+    {
+        unset($this->expected[$methodName]);
     }
 
     public function whenMethodCalled($methodName, array $arguments)
@@ -27,8 +40,7 @@ class ExpectationComponent implements IComponent, IExpecter
             return;
         }
 
-        $callback = $this->unexpectedMethodCallback;
-        $callback($methodName, $arguments);
+        call_user_func($this->unexpectedMethodCallback, $methodName, $arguments);
     }
 
     public function isMethodExpected($methodName)
@@ -38,7 +50,6 @@ class ExpectationComponent implements IComponent, IExpecter
             if ($component->isExpecting($methodName)) {
                 return true;
             }
-
         }
 
         return false;
@@ -56,8 +67,11 @@ class ExpectationComponent implements IComponent, IExpecter
 
     public function __construct()
     {
+        $this->addExpecter($this);
+
         $this->unexpectedMethodCallback = function () {
         };
+
     }
 }
 
