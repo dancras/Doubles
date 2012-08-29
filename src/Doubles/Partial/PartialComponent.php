@@ -6,6 +6,7 @@
 namespace Doubles\Partial;
 
 use Doubles\Core\IComponent;
+use Doubles\Expectation\ExpectationComponent;
 
 /**
  *
@@ -14,7 +15,7 @@ class PartialComponent implements IComponent
 {
     private $instance;
 
-    /** @var \Doubles\Mock\ExpectationComponent */
+    /** @var \Doubles\Expectation\ExpectationComponent */
     private $expectationComponent;
 
     public function whenMethodCalled($methodName, array $arguments)
@@ -28,7 +29,7 @@ class PartialComponent implements IComponent
 
     public function __construct(
         \Doubles\Core\InstanceSubject $subject,
-        \Doubles\Mock\ExpectationComponent $expectationComponent
+        ExpectationComponent $expectationComponent
     ) {
         $this->instance = $subject->getInstance();
         $this->expectationComponent = $expectationComponent;

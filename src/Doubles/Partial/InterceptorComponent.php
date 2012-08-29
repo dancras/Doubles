@@ -5,13 +5,13 @@
 
 namespace Doubles\Partial;
 
-use Doubles\Mock\IExpecter;
 use Doubles\Core\IComponent;
+use Doubles\Expectation\IExpecter;
 
 /**
  *
  */
-class InterceptorComponent implements IExpecter, IComponent
+class InterceptorComponent implements IComponent, IExpecter
 {
     private $instance;
 

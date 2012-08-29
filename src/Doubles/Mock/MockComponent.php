@@ -6,6 +6,7 @@
 namespace Doubles\Mock;
 
 use Doubles\Core\IComponent;
+use Doubles\Expectation\IExpecter;
 
 /**
  *
