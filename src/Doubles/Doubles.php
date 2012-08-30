@@ -6,6 +6,7 @@
 namespace Doubles;
 
 use Doubles\Expectation\ExpectationComponent;
+use Doubles\Stub\StubComponent;
 
 /**
  * Provides static methods to create composed instances of test doubles
@@ -58,7 +59,7 @@ class Doubles
         $testDouble->addComponent(new Spy\SpyComponent);
 
         $expectationComponent = new ExpectationComponent;
-        $stubComponent = new Mock\StubComponent;
+        $stubComponent = new StubComponent;
         $mockComponent = new Mock\MockComponent;
         $interceptorComponent = new Partial\InterceptorComponent($subject);
 
@@ -85,7 +86,7 @@ class Doubles
         $testDouble = new Core\TestDouble;
 
         $expectationComponent = new ExpectationComponent;
-        $stubComponent = new Mock\StubComponent;
+        $stubComponent = new StubComponent;
         $mockComponent = new Mock\MockComponent;
 
         $expectationComponent->addExpecter($stubComponent);
