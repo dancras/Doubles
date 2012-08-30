@@ -28,10 +28,10 @@ class PartialComponent implements IComponent
     }
 
     public function __construct(
-        \Doubles\Core\InstanceSubject $subject,
+        $subjectInstance,
         ExpectationComponent $expectationComponent
     ) {
-        $this->instance = $subject->getInstance();
+        $this->instance = $subjectInstance;
         $this->expectationComponent = $expectationComponent;
     }
 }

@@ -41,9 +41,9 @@ class InterceptorComponent implements IComponent, IExpecter
         return array_key_exists($methodName, $this->callbacks);
     }
 
-    public function __construct(\Doubles\Core\InstanceSubject $subject)
+    public function __construct($subjectInstance)
     {
-        $this->instance = $subject->getInstance();
+        $this->instance = $subjectInstance;
     }
 }
 

@@ -6,6 +6,7 @@
 namespace Doubles;
 
 use Doubles\Expectation\ExpectationComponent;
+use Doubles\Partial\PartialComponent;
 use Doubles\Stub\StubComponent;
 
 /**
@@ -52,7 +53,7 @@ class Doubles
      */
     public static function partial($object)
     {
-        $subject = new Core\InstanceSubject($object);
+        $subject = Core\Subject::fromInstance($object);
 
         $testDouble = new Core\TestDouble;
 
@@ -61,13 +62,13 @@ class Doubles
         $expectationComponent = new ExpectationComponent;
         $stubComponent = new StubComponent;
         $mockComponent = new Mock\MockComponent;
-        $interceptorComponent = new Partial\InterceptorComponent($subject);
+        $interceptorComponent = new Partial\InterceptorComponent($object);
 
         $expectationComponent->addExpecter($stubComponent);
         $expectationComponent->addExpecter($mockComponent);
         $expectationComponent->addExpecter($interceptorComponent);
 
-        $testDouble->addComponent(new Partial\PartialComponent($subject, $expectationComponent));
+        $testDouble->addComponent(new PartialComponent($object, $expectationComponent));
         $testDouble->addComponent($expectationComponent);
         $testDouble->addComponent($stubComponent);
         $testDouble->addComponent($mockComponent);

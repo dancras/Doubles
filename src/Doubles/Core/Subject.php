@@ -62,6 +62,11 @@ class Subject
         return interface_exists($this->fullyQualifiedName);
     }
 
+    public static function fromInstance($object)
+    {
+        return new static('\\' . get_class($object), T_CLASS);
+    }
+
     public function __construct($fullyQualifiedName, $type)
     {
         if ($type !== T_CLASS && $type !== T_INTERFACE) {
