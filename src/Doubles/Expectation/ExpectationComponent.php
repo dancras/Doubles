@@ -11,38 +11,66 @@ use Doubles\Core\IComponent;
  * Provides functionality to track which methods are expected for a test double.
  * A callback can be set to handle unexpected method usage.
  */
-class ExpectationComponent implements IComponent, IExpectation, IExpecter
+class ExpectationComponent implements IComponent, IExpectation
 {
     private $expecters = array();
 
     private $unexpectedMethodCallback;
 
-    private $expected = array();
+    private $ignored = array();
 
     public function setUnexpectedMethodCallback(\Closure $callback)
     {
         $this->unexpectedMethodCallback = $callback;
     }
 
-    public function expect($methodName)
+    /**
+     * Use this to stop the unexpected callback for the given method.
+     *
+     * @param string $methodName
+     */
+    public function ignore($methodName)
     {
-        $this->expected[$methodName] = $methodName;
+        $this->ignored[$methodName] = $methodName;
     }
 
-    public function unexpect($methodName)
+    public function unignore($methodName)
     {
-        unset($this->expected[$methodName]);
+        unset($this->ignored[$methodName]);
     }
 
     public function whenMethodCalled($methodName, array $arguments)
     {
-        if ($this->isMethodExpected($methodName)) {
+        if (
+            $this->isMethodIgnored($methodName) ||
+            $this->isMethodExpected($methodName)
+        ) {
             return;
         }
 
         call_user_func($this->unexpectedMethodCallback, $methodName, $arguments);
     }
 
+    /**
+     * Returns true when a method has been given to ignore(). Differs from
+     * expected; expected implies some component is expecting to provide an
+     * implementation for the method.
+     *
+     * @param string $methodName
+     * @return boolean
+     */
+    public function isMethodIgnored($methodName)
+    {
+        return in_array($methodName, $this->ignored);
+    }
+
+    /**
+     * Returns true when one of the registered IExpecters is expecting the given
+     * method.
+     *
+     * @param string $methodName
+     * @return boolean
+     */
     public function isMethodExpected($methodName)
     {
         foreach ($this->expecters as $component) {
@@ -55,11 +83,6 @@ class ExpectationComponent implements IComponent, IExpectation, IExpecter
         return false;
     }
 
-    public function isExpecting($methodName)
-    {
-        return isset($this->expected[$methodName]);
-    }
-
     public function addExpecter(IExpecter $expecter)
     {
         $this->expecters[] = $expecter;
@@ -67,11 +90,8 @@ class ExpectationComponent implements IComponent, IExpectation, IExpecter
 
     public function __construct()
     {
-        $this->addExpecter($this);
-
         $this->unexpectedMethodCallback = function () {
         };
-
     }
 }
 

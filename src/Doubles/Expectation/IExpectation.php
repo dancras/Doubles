@@ -21,18 +21,17 @@ interface IExpectation
     public function setUnexpectedMethodCallback(\Closure $callback);
 
     /**
-     * Expect the given method so that the unexpected method callback will not
-     * be called.
+     * Calls to the given method wont trigger the callback when unexpected.
      *
      * @param string $methodName
      */
-    public function expect($methodName);
+    public function ignore($methodName);
 
     /**
-     * Remove an expectation set with expect() for the given method name.
+     * Remove the ignored status of the given method.
      *
      * @param string $methodName
      */
-    public function unexpect($methodName);
+    public function unignore($methodName);
 }
 
