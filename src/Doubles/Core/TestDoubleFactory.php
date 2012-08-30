@@ -223,8 +223,10 @@ namespace {$namespace} {
 
         if ($parameter->isArray()) {
             $typeHint = 'array ';
-        } elseif ($parameter->getClass()) {
-            $typeHint = $parameter->getClass()->getName() . ' ';
+        } else if ($parameter->isCallable()) {
+            $typeHint = 'callable ';
+        } else if ($parameter->getClass()) {
+            $typeHint = '\\' . $parameter->getClass()->getName() . ' ';
         }
 
         if ($parameter->isPassedByReference()) {
@@ -241,7 +243,7 @@ namespace {$namespace} {
 
             $default = ' = ' . $default;
 
-        } elseif ($parameter->isOptional()) {
+        } else if ($parameter->isOptional()) {
 
             $default = ' = null';
 
