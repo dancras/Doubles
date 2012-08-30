@@ -6,6 +6,7 @@
 namespace Doubles\Stub;
 
 use Doubles\Spy\ISpy;
+use Doubles\Expectation\IExpectation;
 
 interface IStub extends ISpy, IExpectation
 {

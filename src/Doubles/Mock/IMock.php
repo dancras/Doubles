@@ -5,6 +5,8 @@
 
 namespace Doubles\Mock;
 
+use Doubles\Stub\IStub;
+
 interface IMock extends IStub
 {
     /**
