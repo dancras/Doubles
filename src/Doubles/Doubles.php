@@ -6,6 +6,7 @@
 namespace Doubles;
 
 use Doubles\Expectation\ExpectationComponent;
+use Doubles\Interceptor\InterceptorComponent;
 use Doubles\Partial\PartialComponent;
 use Doubles\Stub\StubComponent;
 
@@ -62,7 +63,7 @@ class Doubles
         $expectationComponent = new ExpectationComponent;
         $stubComponent = new StubComponent;
         $mockComponent = new Mock\MockComponent;
-        $interceptorComponent = new Partial\InterceptorComponent($object);
+        $interceptorComponent = new InterceptorComponent($object);
 
         $expectationComponent->addExpecter($stubComponent);
         $expectationComponent->addExpecter($mockComponent);

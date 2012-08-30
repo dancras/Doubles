@@ -3,7 +3,7 @@
  * Released under a new BSD license.
  * https://github.com/dancras/Doubles/blob/master/LICENSE */
 
-namespace Doubles\Partial;
+namespace Doubles\Interceptor;
 
 use Doubles\Core\IComponent;
 use Doubles\Expectation\IExpecter;
