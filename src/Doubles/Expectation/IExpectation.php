@@ -18,7 +18,7 @@ interface IExpectation
      * will receive the method name and an array of the arguments passed
      * to the method orignally.
      */
-    public function setUnexpectedMethodCallback(\Closure $callback);
+    public function setUnexpectedMethodCallback(callable $callback);
 
     /**
      * Calls to the given method wont trigger the callback when unexpected.
