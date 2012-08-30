@@ -223,9 +223,9 @@ namespace {$namespace} {
 
         if ($parameter->isArray()) {
             $typeHint = 'array ';
-        } else if ($parameter->isCallable()) {
+        } elseif ($parameter->isCallable()) {
             $typeHint = 'callable ';
-        } else if ($parameter->getClass()) {
+        } elseif ($parameter->getClass()) {
             $typeHint = '\\' . $parameter->getClass()->getName() . ' ';
         }
 
@@ -243,7 +243,7 @@ namespace {$namespace} {
 
             $default = ' = ' . $default;
 
-        } else if ($parameter->isOptional()) {
+        } elseif ($parameter->isOptional()) {
 
             $default = ' = null';
 
