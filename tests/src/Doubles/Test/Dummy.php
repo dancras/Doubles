@@ -40,6 +40,10 @@ class Dummy
         return 'fixed';
     }
 
+    public function foo()
+    {
+    }
+
     public function __construct()
     {
         $this->constructedValue = null;

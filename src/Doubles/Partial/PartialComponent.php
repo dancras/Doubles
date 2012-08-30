@@ -9,7 +9,8 @@ use Doubles\Core\IComponent;
 use Doubles\Expectation\ExpectationComponent;
 
 /**
- *
+ * Acts as a proxy to the original method but will not trigger the original
+ * method if some other component in the test double is handling it.
  */
 class PartialComponent implements IComponent
 {
