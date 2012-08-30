@@ -6,7 +6,6 @@
 namespace Doubles;
 
 use PHPUnit_Framework_TestCase;
-use Doubles\Doubles;
 use Doubles\Expectation\ExpectationComponent;
 
 class ExpectationComponentTest extends PHPUnit_Framework_TestCase
@@ -23,9 +22,11 @@ class ExpectationComponentTest extends PHPUnit_Framework_TestCase
         $component = new ExpectationComponent;
 
         $that = $this;
-        $component->setUnexpectedMethodCallback(function () use ($that) {
-            $that->fail('No callback expected');
-        });
+        $component->setUnexpectedMethodCallback(
+            function () use ($that) {
+                $that->fail('No callback expected');
+            }
+        );
 
         $component->expect('foo');
 
