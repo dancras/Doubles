@@ -28,116 +28,119 @@ Shortcomings
 ------------
 
  *   If your classes have matching methods to the chosen test double, there is
-     currently no way (or planned feature) to access the test double method.
+     currently no way to access the test double method.
 
- *   There is no support for partial doubles.
-
- *   There is no support for protected methods.
+ *   Intercepting a protected method requires reflection to invoke the original
+     method.
 
 
 Reference
 ---------
 
-If you prefer to read code, the unit tests for doubles cover all of the basic use
-cases. This reference will provide examples with some reasoning behind them.
+Add the following:
+
+    use Doubles\Doubles;
+
+
+### Full test doubles
+
+Create test doubles with all methods of subject replaced:
+
+    $double = Doubles::fromClass('\MyClass');
+
+    $double = Doubles::fromInterface('\MyInterface');
+
+Doubles will create the subject if it does not exist yet.
+
+
+### Partial test doubles
+
+Methods of a partial test double are unaffected until they are stubbed, mocked
+or intercepted. They are created from an instance of the subject.
+
+    $subject = new \Doubles\Test\Dummy;
+
+    $double = Doubles::partial($subject);
+
+It might be necessary to skip the constructor of a subject:
+
+    $subject = Doubles::noConstruct('\Doubles\Test\Dummy');
 
 
 ### Spies
 
-Tracks any interactions with an object and provides a clean API to assert against.
+Provide access to the history of interactions with a test double, including
+unaffected methods of partial test doubles. A graph service test double might
+have the following actions performed on it:
 
-    $myObject = Spy::fromClass('MyClass');
+    $double->plot(0, 5);
 
-    is_a($myObject, 'MyClass'); // true
+    $double->plot(2, 6);
 
-Creating a test double will define a new class extending the original and return
-an instance of it. This can be passed to the object under test.
+    $double->setLineColour('red');
 
-For the following examples, our spy has the following actions performed on it:
+    $double->render();
 
-    $myObject->give('first', 1);
+We can interrogate the test double after the code is run:
 
-    $myObject->give('second', 2);
+    $double->spy('plot')->args(0); // array(0, 5)
 
-    $myObject->has(3);
+    $double->spy('plot')->arg(1, 0); // 2
 
-    $myObject->doSomething();
+    $double->spy('plot')->callCount(); // 2
 
-#### Arguments
+    $double->callCount(); // 4
 
-Arguments passed to the spy can be retrieved:
 
-    $myObject->spy('give')->args(0); // array('first', 1)
+#### One Call
 
-    $myObject->spy('give')->args(1); // array('second', 2)
+When a method is expecting one call we can avoid superfluous assertions by using
+the one call variant. Notice you can omit the call index when using the one call
+variant.
 
-Or more directly:
+    $double->spy('setLineColour')->oneCallArgs(); // array('red')
 
-    $myObject->spy('give')->args(0, 0); // 'first'
+    $double->spy('setLineColour')->oneCallArgs(0); // 'red'
 
-    $myObject->spy('give')->args(0, 1); // 1
+A one call method will throw an exception if the method has not received exactly
+one call.
 
-Arguments can be tested with the full power of php. A simple example:
+    $double->spy('plot')->oneCallArgs(); // throws \Doubles\Spy\OneCallException
 
-    $arg = $myObject->spy('give')->args(0, 1);
+    $double->spy('foo')->oneCallArgs(); // throws \Doubles\Spy\OneCallException
 
-    $this->assertTrue( $arg < 10 && $arg % 2 === 0 ); // fail
-
-#### Call Counts
-
-We can also determine the total call count of all methods:
-
-    $myObject->callCount(); // 4
-
-Or for a specific method:
-
-    $myObject->spy('give')->callCount(); // 2
-
-#### One Call Methods
-
-Using doubles, I found myself doing this very often:
-
-    $this->assertSame(1, $myObject->spy('doSomething')->callCount());
-
-So I've added a one call variant which will throw an exception if the method in
-question has not received exactly one call.
-
-    $myObject->spy('give')->oneCallArgs(); // throws \Doubles\Spy\OneCallException
-
-    $myObject->spy('has')->oneCallArgs(); // array(3)
-
-    $myObject->spy('foo')->oneCallArgs(); // throws \Doubles\Spy\OneCallException
-
-Since it requires exactly one call there is no need to supply a call index.
-
-    $myObject->spy('has')->oneCallArg(0); // 3
 
 #### Call Order
 
-Still using the same example, we can also determine the order a call to a method
-was made. Call order begins at 1.
+Starts from one. Can be used to assert that methods are called in the expected
+order.
 
-    $myObject->spy('give')->callOrder(0); // 1
+    $double->spy('plot')->callOrder(0); // 1
 
-    $myObject->spy('give')->callOrder(1); // 2
+    $double->spy('plot')->callOrder(1); // 2
 
-    $myObject->spy('doSomething')->callOrder(0); // 3
+The one call variant also works for call order:
 
-By doing so we can assert that methods are called in the expected order.
+    $double->spy('render')->oneCallOrder(0); // 4
 
-    $this->assertGreaterThan($myObject->spy('give')->callOrder(1), $myObject->spy('doSomething')->oneCallOrder()); // pass
+The following code asserts that render is called last and only once:
 
-Notice how oneCallOrder() was used, performing the boilerplate one call check.
+    $this->assertSame(
+        $double->callCount(),
+        $double->spy('render')->oneCallOrder(0)
+    ); // pass
+
 
 #### Shared Call Order
 
-Occasionally you need to compare the call order between instances. Assume all
-objects in this example have been created as spies.
+Occasionally you need to compare the call order between instances. The
+Doubles::shareCounter() method distributes a shared call counter. Assume all
+objects in this example have been created as test doubles:
 
-    CallCounter::shareNew($pizza, $waiter, $customer);
+    Doubles::shareCounter($pizza, $waiter, $customer);
 
-The \Doubles\Spy\CallCounter distributes a shared call counter. The following
-actions are performed on our objects:
+The following actions are incorrectly performed on our objects. Our impatient
+customer seems to be helping him or herself:
 
     $pizza->cook();
 
@@ -145,52 +148,47 @@ actions are performed on our objects:
 
     $waiter->take($pizza);
 
-Clearly these must occur in a specific order.
+Using the shared call order we can catch this error in our tests. The pizza
+must be cooked before the waiter takes it:
 
-    $this->assertGreaterThan($pizza->spy('cook')->oneSharedCallOrder(), $waiter->spy('take')->sharedCallOrder(0)); // pass
+    $this->assertGreaterThan(
+        $pizza->spy('cook')->oneSharedCallOrder(),
+        $waiter->spy('take')->sharedCallOrder(0)
+    ); // pass
 
-    $this->assertGreaterThan($waiter->spy('take')->sharedCallOrder(0), $customer->spy('eat')->sharedCallOrder(0)); // fail
+The waiter must take the pizza before the customer eats it:
 
-Our impatient customer appears to be helping him/her self and so our test fails.
-Notice again the oneSharedCallOrder variant, ensuring our pizza is not burnt.
+    $this->assertGreaterThan(
+        $waiter->spy('take')->sharedCallOrder(0),
+        $customer->spy('eat')->sharedCallOrder(0)
+    ); // fail
+
+Notice again the one call variant, ensuring our pizza is not burnt.
+
+
+### Stubs
+
+    $double->stub('foo', 'bar');
+
+    $double->foo(); // 'bar'
+
+Stubs can also throw exceptions:
+
+    $double->stub('boom', new EndOfTheWorldException);
+
+    $double->boom(); // throws EndOfTheWorldException
+
+To actually return an exception you need to use a mock.
 
 
 ### Mocks
 
-The mock interface combines spying, stubbing and mocking so instances created as
-mocks can use all of the methods in the Spy API.
-
-    $myObject = Mock::fromClass('MyClass');
-
-    is_a($myObject, 'MyClass'); // true
-
-I can't think of any reason not to use Mocks every time.. I realised this while
-writing this documentation.
-
-#### Stubbing
-
-Stubbing has been kept very simple:
-
-    $myObject->stub('foo', 'bar');
-
-    $myObject->foo(); // 'bar'
-
-Stubs can also throw exceptions:
-
-    $myObject->stub('boom', new EndOfTheWorldException);
-
-    $myObject->boom(); // throws EndOfTheWorldException
-
-If you need a method to actually return an Exception, you will need to mock it.
-
-#### Mocking
-
 Mocking is the most versatile way to test a method but can be difficult to follow.
 
     $myObject->mock('give', function ($methodName, $arguments) use (&$m, &$a) {
-      $m = $methodName; // 'give'
-      $a = $arguments; // array(1, 2, 3)
-      return 'result';
+        $m = $methodName; // 'give'
+        $a = $arguments; // array(1, 2, 3)
+        return 'result';
     });
 
     $myObject->give(1, 2, 3); // 'result'
@@ -202,7 +200,22 @@ If you are asserting within the mock, you may want to use a spy. Alternatively,
 using variables by reference will allow you to perform your assertions outside
 the closure.
 
-#### Expectations
+
+### Interceptors
+
+Intercepting is an improved form of mocking available to partials, providing the
+instance of the partial subject to the callback.
+
+    $myObject->intercept('foo', function ($methodName, $arguments, $instance) use (&$m, &$a) {
+        $m = $methodName; // 'foo'
+        $a = $arguments; // array(1, 2, 3)
+        return $instances->foo($a);
+    });
+
+    $myObject->give(1, 2, 3); // 'result'
+
+
+### Expectations
 
 When you mock or stub a method it becomes expected. By default, calls to methods
 that are not expected have no repercussions.
@@ -210,7 +223,7 @@ that are not expected have no repercussions.
     $myObject->unknown(); // null
 
     $myObject->setUnexpectedMethodCallback(function ($methodName, $arguments) {
-      throw new Exception;
+        throw new Exception;
     });
 
     $myObject->unknown(); // throws Exception
