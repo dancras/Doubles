@@ -25,7 +25,10 @@ class PartialComponent implements IComponent
             return;
         }
 
-        return call_user_func_array(array($this->instance, $methodName), $arguments);
+        $method = new \ReflectionMethod($this->instance, $methodName);
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($this->instance, $arguments);
     }
 
     public function __construct(

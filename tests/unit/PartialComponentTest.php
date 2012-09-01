@@ -33,6 +33,19 @@ class PartialComponentTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testProxyOnProtectedMethod()
+    {
+        $object = new \Doubles\Test\Dummy;
+        $expectationComponent = new \Doubles\Expectation\ExpectationComponent;
+
+        $component = new PartialComponent($object, $expectationComponent);
+
+        $this->assertSame(
+            'bar',
+            $component->whenMethodCalled('getProtectedValue', array('bar', 123))
+        );
+    }
+
     public function testDoesNothingWhenMethodExpected()
     {
         $object = Doubles::fromClass('\Doubles\Test\Dummy');

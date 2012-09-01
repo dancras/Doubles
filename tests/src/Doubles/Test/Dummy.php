@@ -17,7 +17,7 @@ class Dummy
 
     protected function getProtectedValue()
     {
-        return null;
+        return 'bar';
     }
 
     public function getConstructedValue()
