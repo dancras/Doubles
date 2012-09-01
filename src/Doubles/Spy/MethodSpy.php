@@ -205,7 +205,7 @@ class MethodSpy
     private function checkOneCall()
     {
         if ($this->callCount !== 1) {
-            throw new OneCallException('One call violation for ' . $this->methodName);
+            throw new OneCallException($this->methodName, $this->callCount);
         }
     }
 

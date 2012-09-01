@@ -12,5 +12,11 @@ use \Doubles\Core\DoublesException;
  */
 class OneCallException extends DoublesException
 {
+    public function __construct($methodName, $callCount)
+    {
+        parent::__construct(
+            "One call violation for {$methodName}. Call count was {$callCount}"
+        );
+    }
 }
 
