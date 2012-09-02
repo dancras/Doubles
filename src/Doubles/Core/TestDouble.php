@@ -6,6 +6,7 @@
 namespace Doubles\Core;
 
 use \SplStack;
+use Doubles\Core\FluentInterface;
 
 /**
  * Acts as a bridge between the generated class and the functionality that
@@ -63,7 +64,14 @@ class TestDouble
     {
         foreach ($this->components as $component) {
             if (method_exists($component, $methodName)) {
-                return call_user_func_array(array($component, $methodName), $arguments);
+
+                $return = call_user_func_array(array($component, $methodName), $arguments);
+
+                if ($return !== null) {
+                    return $return;
+                }
+
+                return new FluentInterface;
             }
         }
 
@@ -82,12 +90,12 @@ class TestDouble
         $this->components->push($component);
     }
 
-        /**
-         * Set to true when the subject class or interface of this test double
-         * has not been implemented yet.
-         *
-         * @param boolean $setting
-         */
+    /**
+     * Set to true when the subject class or interface of this test double
+     * has not been implemented yet.
+     *
+     * @param boolean $setting
+     */
     public function subjectIsUndefined($setting)
     {
         $this->isSubjectUndefined = $setting;

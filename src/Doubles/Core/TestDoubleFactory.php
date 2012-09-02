@@ -15,8 +15,13 @@ class TestDoubleFactory
 
     public function __call($methodName, $arguments)
     {
-        return $this->testDouble->whenUndefinedMethodCalled($methodName, $arguments);
+        $return = $this->testDouble->whenUndefinedMethodCalled($methodName, $arguments);
 
+        if (is_a($return, "\Doubles\Core\FluentInterface")) {
+            return $this;
+        }
+
+        return $return;
     }
 ';
 

@@ -6,9 +6,10 @@
 namespace Doubles\Core;
 
 /**
- * Use this exception to indicate that the current test has failed.
+ * Used to indicate to the generated test double that a fluent interface should
+ * be returned.
  */
-class FailureException extends DoublesException
+class FluentInterface
 {
 }
 

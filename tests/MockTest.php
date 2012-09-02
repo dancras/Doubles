@@ -101,5 +101,15 @@ class MockTest extends PHPUnit_Framework_TestCase
         $this->assertSame('method', $m);
         $this->assertEquals(array('someArg'), $a);
     }
+
+    public function testFluentInterface()
+    {
+        $double = Doubles::fromClass('\SomeClass');
+        $double->stub('foo', 'bar')
+               ->stub('hello', 'world');
+
+        $this->assertSame('bar', $double->foo());
+        $this->assertSame('world', $double->hello());
+    }
 }
 
