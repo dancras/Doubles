@@ -134,10 +134,12 @@ The following code asserts that render is called last and only once:
 #### Shared Call Order
 
 Occasionally you need to compare the call order between instances. The
-Doubles::shareCounter() method distributes a shared call counter. Assume all
-objects in this example have been created as test doubles:
+Doubles\Spy\CallCounter::shareNew() method distributes a shared call counter.
+Assume all objects in this example have been created as test doubles:
 
-    Doubles::shareCounter($pizza, $waiter, $customer);
+    use Doubles\Spy\CallCounter;
+
+    CallCounter::shareNew($pizza, $waiter, $customer);
 
 The following actions are incorrectly performed on our objects. Our impatient
 customer seems to be helping him or herself:
