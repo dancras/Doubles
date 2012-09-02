@@ -1,7 +1,6 @@
 <?php
-/* Copyright (c) 2011, Daniel Howlett. All rights reserved.
- * Released under a new BSD license.
- * https://github.com/dancras/Doubles/blob/master/LICENSE */
+/* Copyright (c) 2012, Daniel Howlett. All rights reserved.
+ * Dual licensed under the MIT and GPL licenses. */
 
 use Doubles\Doubles;
 

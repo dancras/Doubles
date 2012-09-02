@@ -1,11 +1,12 @@
 Doubles
 =======
 
-A test doubles framework which is simple, logical, powerful and portable.
+A test doubles library which is simple, logical, powerful and portable.
 
 Requires PHP 5.3+.
 
-Released under a New BSD License.
+Copyright (c) 2012 Daniel Howlett
+Dual licensed under the MIT and GPL licenses.
 
 Feedback can be left at http://www.dancras.co.uk
 
