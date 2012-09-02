@@ -56,12 +56,12 @@ class TestDoubleFactory
      * @param  \Doubles\Core\TestDouble $testDouble
      * @param  string                   $nameFormat
      * @return object
-     * @throws DoublesException
+     * @throws \Doubles\Core\UsageException
      */
     public static function create(Subject $subject, TestDouble $testDouble, $nameFormat)
     {
         if (strpos($nameFormat, '%s') === false) {
-            throw new DoublesException('$nameFormat uses sprintf and requires %s in the format');
+            throw new UsageException('$nameFormat uses sprintf and requires %s in the format');
         }
 
         $testDoubleName = sprintf($nameFormat, $subject->getName());

@@ -78,7 +78,7 @@ class SpyTest extends PHPUnit_Framework_TestCase
 
     public function testOneCallArgThrowsExceptionWhenCalledMoreThanOnce()
     {
-        $this->setExpectedException('\Doubles\Spy\OneCallException');
+        $this->setExpectedException('\Doubles\Core\FailureException');
 
         $spy = Doubles::fromClass('\SomeClass');
         $spy->method();
@@ -89,7 +89,7 @@ class SpyTest extends PHPUnit_Framework_TestCase
 
     public function testOneCallArgsThrowsExceptionWhenCalledMoreThanOnce()
     {
-        $this->setExpectedException('\Doubles\Spy\OneCallException');
+        $this->setExpectedException('\Doubles\Core\FailureException');
 
         $spy = Doubles::fromClass('\SomeClass');
         $spy->method();
@@ -100,7 +100,7 @@ class SpyTest extends PHPUnit_Framework_TestCase
 
     public function testOneCallOrderThrowsExceptionWhenCalledMoreThanOnce()
     {
-        $this->setExpectedException('\Doubles\Spy\OneCallException');
+        $this->setExpectedException('\Doubles\Core\FailureException');
 
         $spy = Doubles::fromClass('\SomeClass');
         $spy->method();
@@ -111,7 +111,7 @@ class SpyTest extends PHPUnit_Framework_TestCase
 
     public function testOneSharedCallOrderThrowsExceptionWhenCalledMoreThanOnce()
     {
-        $this->setExpectedException('\Doubles\Spy\OneCallException');
+        $this->setExpectedException('\Doubles\Core\FailureException');
 
         $spy = Doubles::fromClass('\SomeClass');
         $spy->method();

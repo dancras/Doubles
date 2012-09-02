@@ -71,7 +71,7 @@ class TestDouble
             return $this->whenSubjectMethodCalled($methodName, $arguments);
         }
 
-        throw new DoublesException(
+        throw new FailureException(
             $methodName . ' does not exist on the test subject. Perhaps you want rapid prototyping enabled?'
         );
 

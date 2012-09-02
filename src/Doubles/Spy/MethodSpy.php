@@ -5,6 +5,9 @@
 
 namespace Doubles\Spy;
 
+use Doubles\Core\FailureException;
+use Doubles\Core\UsageException;
+
 /**
  * Used to log actions that occur on a method. Provides a convenient API to the
  * summary of this activity
@@ -45,7 +48,7 @@ class MethodSpy
      *
      * @arg numeric $callIndex
      * @return array[]mixed
-     * @throws \Doubles\DoublesException When no method call exists at provided call index
+     * @throws \Doubles\Core\FailureException When no method call exists at provided call index
      */
     public function args($callIndex)
     {
@@ -60,8 +63,8 @@ class MethodSpy
      * @arg numeric $callIndex
      * @arg numeric $argIndex
      * @return mixed
-     * @throws \Doubles\DoublesException When no method call exists at provided call index or
-     *                                    no arg exists at provided argIndex
+     * @throws \Doubles\Core\FailureException When no method call exists at provided call index or
+     *                                        no arg exists at provided argIndex
      */
     public function arg($callIndex, $argIndex)
     {
@@ -78,7 +81,7 @@ class MethodSpy
      * Since there can only be one call index, that argument is omitted.
      *
      * @return array[]mixed
-     * @throws \Doubles\DoublesException When method not called exactly one time
+     * @throws \Doubles\Core\FailureException When method not called exactly one time
      */
     public function oneCallArgs()
     {
@@ -95,8 +98,8 @@ class MethodSpy
      *
      * @arg numeric $argIndex
      * @return mixed
-     * @throws \Doubles\DoublesException When method not called exactly one time or
-     *                                    no arg exists at provided argIndex
+     * @throws \Doubles\Core\FailureException When method not called exactly one time or
+     *                                        no arg exists at provided argIndex
      */
     public function oneCallArg($argIndex)
     {
@@ -121,7 +124,7 @@ class MethodSpy
      *
      * @arg numeric $callIndex
      * @return int
-     * @throws \Doubles\DoublesException When no method call exists at provided call index
+     * @throws \Doubles\Core\FailureException When no method call exists at provided call index
      */
     public function callOrder($callIndex)
     {
@@ -136,15 +139,15 @@ class MethodSpy
      *
      * @arg numeric $callIndex
      * @return int
-     * @throws \Doubles\DoublesException When no method call exists at provided call index
-     *                                    or shared call order is not available
+     * @throws \Doubles\Core\FailureException When no method call exists at provided call index
+     * @throws \Doubles\Core\UsageException When shared call order is not available
      */
     public function sharedCallOrder($callIndex)
     {
         $this->checkCallIndex($callIndex);
 
         if (!isSet($this->calls[$callIndex]->sharedCallOrder)) {
-            throw new DoublesException('No shared CallCounter was set when calling ' . $this->methodName);
+            throw new UsageException('No shared CallCounter was set when calling ' . $this->methodName);
         }
 
         return $this->calls[$callIndex]->sharedCallOrder;
@@ -205,14 +208,16 @@ class MethodSpy
     private function checkOneCall()
     {
         if ($this->callCount !== 1) {
-            throw new OneCallException($this->methodName, $this->callCount);
+            throw new FailureException(
+                "One call violation for {$this->methodName}. Call count was {$this->callCount}"
+            );
         }
     }
 
     private function checkCallIndex($callIndex)
     {
         if (!isSet($this->calls[$callIndex])) {
-            throw new DoublesException('Call index [' . $callIndex .'] out of bounds for ' . $this->methodName);
+            throw new FailureException('Call index [' . $callIndex .'] out of bounds for ' . $this->methodName);
         }
     }
 
@@ -221,7 +226,7 @@ class MethodSpy
         $this->checkCallIndex($callIndex);
 
         if (!array_key_exists($argIndex, $this->calls[$callIndex]->args)) {
-            throw new DoublesException(
+            throw new FailureException(
                 'Arg index [' . $callIndex .'][' . $argIndex . '] out of bounds for ' . $this->methodName
             );
         }

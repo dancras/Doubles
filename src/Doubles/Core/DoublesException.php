@@ -5,6 +5,9 @@
 
 namespace Doubles\Core;
 
+/**
+ * A base exception for the doubles library; all other exceptions extend this.
+ */
 class DoublesException extends \Exception
 {
 }

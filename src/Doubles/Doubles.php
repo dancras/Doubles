@@ -50,7 +50,7 @@ class Doubles
     }
 
     /**
-     * @return \Doubles\Partial\IInterceptor
+     * @return \Doubles\Interceptor\IInterceptor
      */
     public static function partial($object)
     {

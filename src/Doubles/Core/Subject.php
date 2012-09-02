@@ -70,11 +70,11 @@ class Subject
     public function __construct($fullyQualifiedName, $type)
     {
         if ($type !== T_CLASS && $type !== T_INTERFACE) {
-            throw new DoublesException('$type must be T_CLASS or T_INTERFACE');
+            throw new UsageException('$type must be T_CLASS or T_INTERFACE');
         }
 
         if (strpos($fullyQualifiedName, '\\') !== 0) {
-            throw new DoublesException('$fullyQualifiedName must start with \\');
+            throw new UsageException('$fullyQualifiedName must start with \\');
         }
 
         $this->fullyQualifiedName = $fullyQualifiedName;

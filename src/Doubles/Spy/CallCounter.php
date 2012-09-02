@@ -5,7 +5,7 @@
 
 namespace Doubles\Spy;
 
-use \Doubles\Core\DoublesException;
+use \Doubles\Core\UsageException;
 
 /**
  * Simple incremental counting mechanism with a static function to distribute a
@@ -17,11 +17,13 @@ class CallCounter
     private $count = 0;
 
     /**
-     * Creates a new instance and sets it on all params
+     * Creates a new instance and sets it on all params.
+     *
+     * All object passed to this method must have the public method setSharedCallCounter
+     * or an error will be triggered.
      *
      * @return void
-     * @throws \Doubles\DoublesException When provided param is missing setSharedCallCounter() or
-     *                                    no params are provided
+     * @throws \Doubles\Core\UsageException When no arguments are provided.
      */
     public static function shareNew()
     {
@@ -30,7 +32,7 @@ class CallCounter
         $recipients = func_get_args();
 
         if (count($recipients) === 0) {
-            throw new DoublesException('At least one parameter is expected');
+            throw new UsageException('At least one parameter is expected');
         }
 
         foreach ($recipients as $r) {
