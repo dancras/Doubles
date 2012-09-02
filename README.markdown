@@ -5,34 +5,34 @@ A test doubles library which is simple, logical, powerful and portable.
 
 Requires PHP 5.3+.
 
+No changes to your unit testing framework are required for integration.
+
 Copyright (c) 2012 Daniel Howlett
 Dual licensed under the MIT and GPL licenses.
 
 Feedback can be left at http://www.dancras.co.uk
 
 
-Getting Started
----------------
+Installation with composer
+--------------------------
 
-Download the source and place the doubles folder somewhere accessible by your
-project.
+To install from packagist, add the following to your composer.json:
 
-    require_once /path/to/doubles/bootstrap.php
+    {
+        "minimum-stability": "dev",
+        "require": {
+            "dancras/doubles": "*"
+        }
+    }
 
-Alternatively, file and folder names match the namespacing so it will be
-compatible with a simple autoloader (not provided).
-
-No changes to your unit testing framework are required for integration.
+Don't forget to include vendor/autoload.php in your code.
 
 
-Shortcomings
+Known issues
 ------------
 
  *   If your classes have matching methods to the chosen test double, there is
      currently no way to access the test double method.
-
- *   Intercepting a protected method requires reflection to invoke the original
-     method.
 
 
 Reference
