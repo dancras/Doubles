@@ -18,7 +18,7 @@ class ExpectationComponent implements IComponent, IExpectation
 
     private $ignored = array();
 
-    public function setUnexpectedMethodCallback(callable $callback)
+    public function setUnexpectedMethodCallback(\Closure $callback)
     {
         $this->unexpectedMethodCallback = $callback;
     }

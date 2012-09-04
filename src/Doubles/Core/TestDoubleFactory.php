@@ -227,8 +227,9 @@ namespace {$namespace} {
 
         if ($parameter->isArray()) {
             $typeHint = 'array ';
-        } elseif ($parameter->isCallable()) {
-            $typeHint = 'callable ';
+        // @TODO Restore this when 5.4 support is added
+        //} elseif ($parameter->isCallable()) {
+        //    $typeHint = 'callable ';
         } elseif ($parameter->getClass()) {
             $typeHint = '\\' . $parameter->getClass()->getName() . ' ';
         }
