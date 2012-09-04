@@ -12,6 +12,8 @@ Dual licensed under the MIT and GPL licenses.
 
 Feedback can be left at http://www.dancras.co.uk
 
+[![Build Status](https://secure.travis-ci.org/dancras/Doubles.png)](http://travis-ci.org/dancras/Doubles)
+
 
 Installation with composer
 --------------------------
