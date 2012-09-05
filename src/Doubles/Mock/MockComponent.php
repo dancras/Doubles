@@ -30,7 +30,7 @@ class MockComponent implements IExpecter, IComponent
             return;
         }
 
-        return $this->callbacks[$methodName]($methodName, $arguments);
+        return call_user_func($this->callbacks[$methodName], $methodName, $arguments);
     }
 
     public function isExpecting($methodName)
