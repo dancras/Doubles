@@ -9,6 +9,21 @@ use Doubles\Spy\MethodSpy;
 
 class MethodSpyTest extends PHPUnit_Framework_TestCase
 {
+    public function testArgsWithNoArgumentReturnsAllArgumentsForAllCalls()
+    {
+        $methodSpy = new MethodSpy('foo');
+        $methodSpy->log(array('abc'), 1);
+        $methodSpy->log(array(123), 2);
+
+        $this->assertEquals(
+            array(
+                array('abc'),
+                array(123)
+            ),
+            $methodSpy->args()
+        );
+    }
+
     public function testFindArgsThrowsFailureExceptionWhenNoCallIsLoggedWithGivenArgs()
     {
         $this->setExpectedException('\Doubles\Core\FailureException');

@@ -43,14 +43,24 @@ class MethodSpy
     }
 
     /**
-     * Fetch the contents of func_get_args() for a specific call made on this method.
+     * If call index given then fetches the contents of func_get_args() for that
+     * call. Otherwise returns an array of all arguments to all calls.
      *
-     * @arg numeric $callIndex
+     * @arg numeric $callIndex [optional]
      * @return array[]mixed
      * @throws \Doubles\Core\FailureException When no method call exists at provided call index
      */
-    public function args($callIndex)
+    public function args($callIndex = null)
     {
+        if ($callIndex === null) {
+            return array_map(
+                function ($call) {
+                    return $call->args;
+                },
+                $this->calls
+            );
+        }
+
         $this->checkCallIndex($callIndex);
 
         return $this->calls[$callIndex]->args;
