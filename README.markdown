@@ -36,6 +36,8 @@ Known issues
  *   If your classes have matching methods to the chosen test double, there is
      currently no way to access the test double method.
 
+ *   Failures triggered by the library will fail tests in phpunit with an E code
+     rather than an F code.
 
 Reference
 ---------
