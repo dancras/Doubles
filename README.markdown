@@ -8,6 +8,7 @@ Requires PHP 5.3+.
 No changes to your unit testing framework are required for integration.
 
 Copyright (c) 2012 Daniel Howlett
+
 Dual licensed under the MIT and GPL licenses.
 
 Feedback can be left at http://www.dancras.co.uk
@@ -38,6 +39,8 @@ Known issues
 
  *   Failures triggered by the library will fail tests in phpunit with an E code
      rather than an F code.
+
+ *   PHP 5.4 features eg. "callable" type hint are currently not supported.
 
 Reference
 ---------
@@ -90,6 +93,10 @@ We can interrogate the test double after the code is run:
 
     $double->spy('plot')->args(0); // array(0, 5)
 
+    $double->spy('plot')->args(); // array(array(0, 5), array(2, 6))
+
+    $double->spy('plot')->findArgs(2, 6); // 1
+
     $double->spy('plot')->arg(1, 0); // 2
 
     $double->spy('plot')->callCount(); // 2
@@ -110,9 +117,9 @@ variant.
 A one call method will throw an exception if the method has not received exactly
 one call.
 
-    $double->spy('plot')->oneCallArgs(); // throws \Doubles\Spy\OneCallException
+    $double->spy('plot')->oneCallArgs(); // throws \Doubles\Core\FailureException
 
-    $double->spy('foo')->oneCallArgs(); // throws \Doubles\Spy\OneCallException
+    $double->spy('foo')->oneCallArgs(); // throws \Doubles\Core\FailureException
 
 
 #### Call Order
@@ -178,6 +185,14 @@ Notice again the one call variant, ensuring our pizza is not burnt.
     $double->stub('foo', 'bar');
 
     $double->foo(); // 'bar'
+
+We can stub multiple methods at once, eg. to stub a fluent interface:
+
+    $double->stub('setX', 'setY', $double);
+
+    $double->setX(); // $double
+
+    $double->setY(); // $double
 
 Stubs can also throw exceptions:
 
