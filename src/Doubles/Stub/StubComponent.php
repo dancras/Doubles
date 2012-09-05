@@ -7,16 +7,23 @@ namespace Doubles\Stub;
 use Doubles\Core\IComponent;
 use Doubles\Expectation\IExpecter;
 
-/**
- *
- */
 class StubComponent implements IExpecter, IComponent
 {
     private $stubs = array();
 
-    public function stub($methodName, $returnValue)
+    public function stub()
     {
-        $this->stubs[$methodName] = $returnValue;
+        $args = func_get_args();
+
+        $returnValue = array_pop($args);
+
+        if (is_array($args[0])) {
+            $args = array_merge($args[0], array_slice($args, 1));
+        }
+
+        foreach ($args as $methodName) {
+            $this->stubs[$methodName] = $returnValue;
+        }
     }
 
     public function unstub($methodName)

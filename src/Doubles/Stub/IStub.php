@@ -10,13 +10,14 @@ use Doubles\Expectation\IExpectation;
 interface IStub extends ISpy, IExpectation
 {
     /**
-     * Subsequent calls to $methodName will return the provided value. If
-     * $returnValue is an Exception or child of, it will be thrown
+     * Subsequent calls to given methods will return the provided return value.
+     * If the return value is an Exception or child of, it will be thrown
      *
-     * @param string $methodName
-     * @param mixed  $returnValue
+     * @param string|array $methodName A method name or array of method names
+     * @param string $_ [optional] Zero or more method names
+     * @param mixed $returnValue
      */
-    public function stub($methodName, $returnValue);
+    public function stub();
 
     /**
      * @param string $methodName
