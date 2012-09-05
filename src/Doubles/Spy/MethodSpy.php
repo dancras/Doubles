@@ -109,6 +109,60 @@ class MethodSpy
     }
 
     /**
+     * Find a call with strictly equal arguments to those given and return the
+     * call index.
+     *
+     * @param mixed $argument
+     * @param mixed $_ [optional] Zero or more addition arguments
+     *
+     * @throws \Doubles\Core\FailureException When no call with given arguments.
+     *
+     * @return int
+     */
+    public function findArgs()
+    {
+        $args = func_get_args();
+
+        foreach ($this->calls as $callIndex => $call) {
+
+            if (count($call->args) !== count($args)) {
+                continue;
+            }
+
+            foreach ($call->args as $argIndex => $arg) {
+
+                if ($args[$argIndex] !== $arg) {
+                    break;
+                }
+
+                if ($argIndex === count($call->args) - 1) {
+                    return $callIndex;
+                }
+
+            }
+        }
+
+        throw new FailureException('Arguments not found in call history');
+    }
+
+    /**
+     * Same as findArgs() but returns a fluent interface rather than call index.
+     *
+     * @param mixed $argument
+     * @param mixed $_ [optional] Zero or more addition arguments
+     *
+     * @throws \Doubles\Core\FailureException When no call with given arguments.
+     *
+     * @return Doubles\Spy\MethodSpy
+     */
+    public function checkArgs()
+    {
+        call_user_func_array(array($this, 'findArgs'), func_get_args());
+
+        return $this;
+    }
+
+    /**
      * Returns the number of calls made on this method.
      *
      * @return int
