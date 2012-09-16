@@ -43,6 +43,11 @@ class Dummy
     {
     }
 
+    public function getOtherMethod()
+    {
+        return $this->getFixedValue();
+    }
+
     public function __construct()
     {
         $this->constructedValue = null;

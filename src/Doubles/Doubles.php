@@ -68,17 +68,21 @@ class Doubles
         $expectationComponent->addExpecter($mockComponent);
         $expectationComponent->addExpecter($interceptorComponent);
 
-        $testDouble->addComponent(new PartialComponent($object, $expectationComponent));
+        $testDouble->addComponent(new PartialComponent($expectationComponent));
         $testDouble->addComponent($expectationComponent);
         $testDouble->addComponent($stubComponent);
         $testDouble->addComponent($mockComponent);
         $testDouble->addComponent($interceptorComponent);
 
-        return Core\TestDoubleFactory::create(
+        $partial = Core\TestDoubleFactory::create(
             $subject,
             $testDouble,
             'Partial%s'
         );
+
+        PartialComponent::mergeSubjectToPartial($object, $partial);
+
+        return $partial;
     }
 
     private static function create($subjectName, $type)

@@ -25,9 +25,15 @@ class TestDoubleFactory
 ';
 
     public static $methodImplementation = '
-    public function %MethodName%(%Parameters%) {
-        return $this->testDouble->whenSubjectMethodCalled("%MethodName%", func_get_args());
+    public function %MethodName%(%Parameters%)
+    {
+        $return = $this->testDouble->whenSubjectMethodCalled("%MethodName%", func_get_args());
 
+        if (is_a($return, "\Doubles\Core\PartialInterface")) {
+            return parent::%MethodName%(%ParametersTypeless%);
+        }
+
+        return $return;
     }';
 
     public static $constructorImplementation = '
@@ -200,22 +206,31 @@ namespace {$namespace} {
     {
         $renderedMethod = static::$methodImplementation;
         $renderedMethod = str_replace('%MethodName%', $methodName, $renderedMethod);
-        $renderedMethod = str_replace('%Parameters%', $renderedParameters, $renderedMethod);
+        $renderedMethod = str_replace('%Parameters%', $renderedParameters['full'], $renderedMethod);
+        $renderedMethod = str_replace('%ParametersTypeless%', $renderedParameters['simple'], $renderedMethod);
 
         return $renderedMethod;
     }
 
     private static function getRenderedParameters(\ReflectionMethod $method)
     {
-        $renderedParameters = array();
+        $renderedParameters = array(
+            'full' => array(),
+            'simple' => array()
+        );
 
         $parameters = $method->getParameters();
 
         foreach ($parameters as $parameter) {
-            $renderedParameters[] = self::getRenderedParameter($parameter);
+            $renderedParameter = self::getRenderedParameter($parameter);
+            $renderedParameters['full'][] = $renderedParameter['full'];
+            $renderedParameters['simple'][] = $renderedParameter['simple'];
         }
 
-        return implode(',', $renderedParameters);
+        return array(
+            'full' => implode(',', $renderedParameters['full']),
+            'simple' => implode(',', $renderedParameters['simple']),
+        );
     }
 
     private static function getRenderedParameter(\ReflectionParameter $parameter)
@@ -254,7 +269,10 @@ namespace {$namespace} {
 
         }
 
-        return $typeHint . $reference . '$' . $name . $default;
+        return array(
+            'full' => $typeHint . $reference . '$' . $name . $default,
+            'simple' => '$' . $name
+        );
     }
 }
 

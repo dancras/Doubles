@@ -10,53 +10,31 @@ use Doubles\Partial\PartialComponent;
 
 class PartialComponentTest extends PHPUnit_Framework_TestCase
 {
-    public function testActsAsProxyWhenMethodNotExpected()
+    public function testReturnsPartialInterfaceWhenMethodNotExpected()
     {
-        $object = Doubles::fromClass('\Doubles\Test\Dummy');
         $expectationComponent = Doubles::fromClass(
             '\Doubles\Expectation\ExpectationComponent'
         );
         $expectationComponent->stub('isMethodExpected', false);
 
-        $component = new PartialComponent($object, $expectationComponent);
-        $component->whenMethodCalled('foo', array('bar', 123));
+        $component = new PartialComponent($expectationComponent);
 
-        $this->assertEquals(
-            array('bar', 123),
-            $object->spy('foo')->oneCallArgs()
-        );
-
-        $this->assertSame(
-            'foo',
-            $expectationComponent->spy('isMethodExpected')->oneCallArg(0)
-        );
-    }
-
-    public function testProxyOnProtectedMethod()
-    {
-        $object = new \Doubles\Test\Dummy;
-        $expectationComponent = new \Doubles\Expectation\ExpectationComponent;
-
-        $component = new PartialComponent($object, $expectationComponent);
-
-        $this->assertSame(
-            'bar',
-            $component->whenMethodCalled('getProtectedValue', array('bar', 123))
+        $this->assertInstanceOf(
+            '\Doubles\Core\PartialInterface',
+            $component->whenMethodCalled('foo', array())
         );
     }
 
     public function testDoesNothingWhenMethodExpected()
     {
-        $object = Doubles::fromClass('\Doubles\Test\Dummy');
         $expectationComponent = Doubles::fromClass(
             '\Doubles\Expectation\ExpectationComponent'
         );
         $expectationComponent->stub('isMethodExpected', true);
 
-        $component = new PartialComponent($object, $expectationComponent);
-        $component->whenMethodCalled('foo', array());
+        $component = new PartialComponent($expectationComponent);
 
-        $this->assertSame(0, $object->callCount());
+        $this->assertNull($component->whenMethodCalled('foo', array()));
     }
 }
 

@@ -5,6 +5,7 @@
 namespace Doubles\Partial;
 
 use Doubles\Core\IComponent;
+use Doubles\Core\PartialInterface;
 use Doubles\Expectation\ExpectationComponent;
 
 /**
@@ -13,10 +14,33 @@ use Doubles\Expectation\ExpectationComponent;
  */
 class PartialComponent implements IComponent
 {
-    private $instance;
-
     /** @var \Doubles\Expectation\ExpectationComponent */
     private $expectationComponent;
+
+    /**
+     * Use reflection to copy instance properties from the test subject to the
+     * test double partial.
+     *
+     * @param object $instance
+     * @param object $partial
+     */
+    public static function mergeSubjectToPartial($instance, $partial)
+    {
+        $rInstance = new \ReflectionObject($instance);
+        $properties = $rInstance->getProperties();
+
+        foreach ($properties as $p) {
+
+            if ($p->isStatic()) {
+                continue;
+            }
+
+            $originalAccess = $p->isPublic();
+            $p->setAccessible(true);
+            $p->setValue($partial, $p->getValue($instance));
+            $p->setAccessible($originalAccess);
+        }
+    }
 
     public function whenMethodCalled($methodName, array $arguments)
     {
@@ -24,17 +48,12 @@ class PartialComponent implements IComponent
             return;
         }
 
-        $method = new \ReflectionMethod($this->instance, $methodName);
-        $method->setAccessible(true);
-
-        return $method->invokeArgs($this->instance, $arguments);
+        return new PartialInterface;
     }
 
     public function __construct(
-        $subjectInstance,
         ExpectationComponent $expectationComponent
     ) {
-        $this->instance = $subjectInstance;
         $this->expectationComponent = $expectationComponent;
     }
 }

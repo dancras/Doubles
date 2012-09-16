@@ -3,12 +3,13 @@
  * Dual licensed under the MIT and GPL licenses. */
 
 use Doubles\Doubles;
+use Doubles\Test\Dummy;
 
 class PartialTest extends PHPUnit_Framework_TestCase
 {
     public function testMethodsOfPartialAreUnaffected()
     {
-        $instance = new \Doubles\Test\Dummy;
+        $instance = new Dummy;
         $partial = Doubles::partial($instance);
         $partial->setValue('value');
         $this->assertSame('value', $partial->getValue());
@@ -17,7 +18,7 @@ class PartialTest extends PHPUnit_Framework_TestCase
 
     public function testSpyOnPartial()
     {
-        $instance = new \Doubles\Test\Dummy;
+        $instance = new Dummy;
         $partial = Doubles::partial($instance);
         $partial->setValue('value');
         $this->assertSame('value', $partial->spy('setValue')->arg(0, 0));
@@ -76,6 +77,21 @@ class PartialTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('someArg'), $a);
         $this->assertSame($instance, $i);
         $this->assertSame(0, $instance->spy('getFixedValue')->callCount());
+    }
+
+    public function test_GivenAMethodCallsAnotherMethod_WhenTheMethodIsCalledOnAPartial_TheOtherMethodHitsTheTestDouble()
+    {
+        $partial = Doubles::partial(new Dummy);
+
+        $this->assertSame('fixed', $partial->getOtherMethod());
+        $this->assertSame(1, $partial->spy('getFixedValue')->callCount());
+    }
+
+    public function testConstructorIsNotSkippedOnPartial()
+    {
+        $partial = Doubles::partial(new Dummy);
+
+        $this->assertSame(null, $partial->getConstructedValue());
     }
 }
 
