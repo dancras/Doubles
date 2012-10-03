@@ -19,6 +19,21 @@ class Dummy
         return 'bar';
     }
 
+    /**
+     * Static functions are currently ignored. Including this ensures they don't
+     * cause any bugs when included.
+     */
+    public static function getStaticValue()
+    {
+    }
+
+    /**
+     * See getStaticValue()
+     */
+    final public function getFinalValue()
+    {
+    }
+
     public function getConstructedValue()
     {
         return $this->constructedValue;

@@ -46,6 +46,11 @@ class Subject
         $methodNames = array();
 
         foreach ($methods as $method) {
+
+            if ($method->isStatic() || $method->isFinal()) {
+                continue;
+            }
+
             $methodNames[] = $method->name;
         }
 
