@@ -1,7 +1,13 @@
 Doubles
 =======
 
-A test doubles library which is simple, logical, powerful and portable.
+Doubles is a php test doubles library with a goal to provide a simple, logical
+api and some syntactic sugar when writing unit tests. It is particularly
+suitable for the arrange-act-assert pattern of unit testing, although it doesn't
+intentionally impose any style. It has been designed with phpunit in mind, but
+has no dependencies and could have valid use cases with other testing frameworks.
+It is currently in the early stages of development and any feedback is very
+welcome.
 
 Requires PHP 5.3+.
 
